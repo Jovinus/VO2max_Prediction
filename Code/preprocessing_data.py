@@ -177,8 +177,8 @@ columns_to_rename = {'SM0104':'percentage_fat', 'SM0101':'Height',
                     'SM3150':'체수분량', 'SM3170':'제지방량'}
 
 
-df_healthy.rename(columns_to_rename, inplace=True)
-df_general.rename(columns_to_rename, inplace=True)
+df_healthy.rename(columns= columns_to_rename, inplace=True)
+df_general.rename(columns= columns_to_rename, inplace=True)
 
 df_healthy_eq = df_healthy_eq[columns_to_use].rename(columns = columns_to_rename)
 df_general_eq = df_general_eq[columns_to_use].rename(columns = columns_to_rename)
@@ -201,4 +201,3 @@ df_healthy.to_csv("../Data/healthy_survival.csv", encoding='utf-8-sig', index=Fa
 df_healthy_eq.to_csv("../Data/healthy_eq.csv", encoding='utf-8-sig', index=False)
 df_general.to_csv("../Data/general_survival.csv", encoding='utf-8-sig', index=False)
 df_general_eq.to_csv("../Data/general_eq.csv", encoding='utf-8-sig', index=False)
-# %%
