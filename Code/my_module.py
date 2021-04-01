@@ -35,9 +35,12 @@ def make_model_get_metrics(X_train, y_train, X_test, y_test, column_mask):
     return linear_model
 
 
-def make_model_tertile(df_selected, df_surv, X_train, y_train, X_test, y_test):
-        # %% Age. BMI, Rest_HR, MVPA
-    column_mask = ['AGE', 'sex', 'BMI', 'rest_HR', 'MVPA']
+def make_model_tertile(df_selected, df_surv, X_train, y_train, X_test, y_test, sex_specific=False):
+    # %% Age. BMI, Rest_HR, MVPA
+    if sex_specific == False:
+        column_mask = ['AGE', 'sex', 'BMI', 'rest_HR', 'MVPA']
+    else:
+        column_mask = ['AGE', 'BMI', 'rest_HR', 'MVPA']
 
     model = make_model_get_metrics(X_train, y_train, X_test, y_test, column_mask)
 
@@ -48,7 +51,10 @@ def make_model_tertile(df_selected, df_surv, X_train, y_train, X_test, y_test):
     df_surv['ABRP_CRF'] = model.predict(df_surv[column_mask]) / 3.5
 
     # %% Age. BMI, Rest_HR
-    column_mask = ['AGE', 'sex', 'BMI', 'rest_HR']
+    if sex_specific == False:
+        column_mask = ['AGE', 'sex', 'BMI', 'rest_HR']
+    else:
+        column_mask = ['AGE', 'BMI', 'rest_HR']
 
     model = make_model_get_metrics(X_train, y_train, X_test, y_test, column_mask)
 
@@ -59,7 +65,10 @@ def make_model_tertile(df_selected, df_surv, X_train, y_train, X_test, y_test):
     df_surv['ABR_CRF'] = model.predict(df_surv[column_mask]) / 3.5
 
     # %% Age. BMI, MVPA
-    column_mask = ['AGE', 'sex', 'BMI', 'MVPA']
+    if sex_specific == False:
+        column_mask = ['AGE', 'sex', 'BMI', 'MVPA']
+    else:
+        column_mask = ['AGE', 'BMI', 'MVPA']
 
     model = make_model_get_metrics(X_train, y_train, X_test, y_test, column_mask)
 
@@ -70,7 +79,10 @@ def make_model_tertile(df_selected, df_surv, X_train, y_train, X_test, y_test):
     df_surv['ABP_CRF'] = model.predict(df_surv[column_mask]) / 3.5
 
     # %% Age. Percentage_fat, rest_HR, MVPA
-    column_mask = ['AGE', 'sex', 'percentage_fat', 'rest_HR', 'MVPA']
+    if sex_specific == False:
+        column_mask = ['AGE', 'sex', 'percentage_fat', 'rest_HR', 'MVPA']
+    else:
+        column_mask = ['AGE', 'percentage_fat', 'rest_HR', 'MVPA']
 
     model = make_model_get_metrics(X_train, y_train, X_test, y_test, column_mask)
 
@@ -81,7 +93,10 @@ def make_model_tertile(df_selected, df_surv, X_train, y_train, X_test, y_test):
     df_surv['APRP_CRF'] = model.predict(df_surv[column_mask]) / 3.5
 
     # %% Age. Percentage_fat, rest_HR
-    column_mask = ['AGE', 'sex', 'percentage_fat', 'rest_HR']
+    if sex_specific == False:
+        column_mask = ['AGE', 'sex', 'percentage_fat', 'rest_HR']
+    else:
+        column_mask = ['AGE', 'percentage_fat', 'rest_HR']
 
     model = make_model_get_metrics(X_train, y_train, X_test, y_test, column_mask)
 
@@ -92,7 +107,10 @@ def make_model_tertile(df_selected, df_surv, X_train, y_train, X_test, y_test):
     df_surv['APR_CRF'] = model.predict(df_surv[column_mask]) / 3.5
 
     # %% Age. Percentage_fat, MVPA
-    column_mask = ['AGE', 'sex', 'percentage_fat', 'MVPA']
+    if sex_specific == False:
+        column_mask = ['AGE', 'sex', 'percentage_fat', 'MVPA']
+    else:
+        column_mask = ['AGE', 'percentage_fat', 'MVPA']
 
     model = make_model_get_metrics(X_train, y_train, X_test, y_test, column_mask)
 
@@ -123,19 +141,47 @@ def make_model_tertile(df_selected, df_surv, X_train, y_train, X_test, y_test):
     df_surv['CRF_tertile'] = pd.qcut(df_surv['CRF'], q=3, labels=['T1', 'T2', 'T3'])
     df_surv['CRF_tertile_nm'] = pd.qcut(df_surv['CRF'], q=3)
 
-    #### BMI
+    #### BMI - ABRP
     df_selected['ABRP_CRF_tertile'] = pd.qcut(df_selected['ABRP_CRF'], q=3, labels=['T1', 'T2', 'T3'])
     df_selected['ABRP_CRF_tertile_nm'] = pd.qcut(df_selected['ABRP_CRF'], q=3)
 
     df_surv['ABRP_CRF_tertile'] = pd.qcut(df_surv['ABRP_CRF'], q=3, labels=['T1', 'T2', 'T3'])
     df_surv['ABRP_CRF_tertile_nm'] = pd.qcut(df_surv['ABRP_CRF'], q=3)
+    
+    #### BMI - ABR
+    df_selected['ABR_CRF_tertile'] = pd.qcut(df_selected['ABR_CRF'], q=3, labels=['T1', 'T2', 'T3'])
+    df_selected['ABR_CRF_tertile_nm'] = pd.qcut(df_selected['ABRP_CRF'], q=3)
 
-    #### Percentage Fat
+    df_surv['ABR_CRF_tertile'] = pd.qcut(df_surv['ABR_CRF'], q=3, labels=['T1', 'T2', 'T3'])
+    df_surv['ABR_CRF_tertile_nm'] = pd.qcut(df_surv['ABR_CRF'], q=3)
+    
+    #### BMI - ABP
+    df_selected['ABP_CRF_tertile'] = pd.qcut(df_selected['ABP_CRF'], q=3, labels=['T1', 'T2', 'T3'])
+    df_selected['ABP_CRF_tertile_nm'] = pd.qcut(df_selected['ABP_CRF'], q=3)
+
+    df_surv['ABP_CRF_tertile'] = pd.qcut(df_surv['ABP_CRF'], q=3, labels=['T1', 'T2', 'T3'])
+    df_surv['ABP_CRF_tertile_nm'] = pd.qcut(df_surv['ABP_CRF'], q=3)
+
+    #### Percentage Fat - APRP
     df_selected['APRP_CRF_tertile'] = pd.qcut(df_selected['APRP_CRF'], q=3, labels=['T1', 'T2', 'T3'])
     df_selected['APRP_CRF_tertile_nm'] = pd.qcut(df_selected['APRP_CRF'], q=3)
 
     df_surv['APRP_CRF_tertile'] = pd.qcut(df_surv['APRP_CRF'], q=3, labels=['T1', 'T2', 'T3'])
     df_surv['APRP_CRF_tertile_nm'] = pd.qcut(df_surv['APRP_CRF'], q=3)
+    
+    #### Percentage Fat - APR
+    df_selected['APR_CRF_tertile'] = pd.qcut(df_selected['APR_CRF'], q=3, labels=['T1', 'T2', 'T3'])
+    df_selected['APR_CRF_tertile_nm'] = pd.qcut(df_selected['APR_CRF'], q=3)
+
+    df_surv['APR_CRF_tertile'] = pd.qcut(df_surv['APR_CRF'], q=3, labels=['T1', 'T2', 'T3'])
+    df_surv['APR_CRF_tertile_nm'] = pd.qcut(df_surv['APR_CRF'], q=3)
+    
+    #### Percentage Fat - APP
+    df_selected['APP_CRF_tertile'] = pd.qcut(df_selected['APP_CRF'], q=3, labels=['T1', 'T2', 'T3'])
+    df_selected['APP_CRF_tertile_nm'] = pd.qcut(df_selected['APP_CRF'], q=3)
+
+    df_surv['APP_CRF_tertile'] = pd.qcut(df_surv['APP_CRF'], q=3, labels=['T1', 'T2', 'T3'])
+    df_surv['APP_CRF_tertile_nm'] = pd.qcut(df_surv['APP_CRF'], q=3)
 
     ################################ Quantile #################################
 
@@ -146,18 +192,46 @@ def make_model_tertile(df_selected, df_surv, X_train, y_train, X_test, y_test):
     df_surv['CRF_qualtile'] = pd.qcut(df_surv['CRF'], q=4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
     df_surv['CRF_qualtile_nm'] = pd.qcut(df_surv['CRF'], q=4)
 
-    #### BMI
+    #### BMI - ABRP
     df_selected['ABRP_CRF_qualtile'] = pd.qcut(df_selected['ABRP_CRF'], q=4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
     df_selected['ABRP_CRF_qualtile_nm'] = pd.qcut(df_selected['ABRP_CRF'], q=4)
 
     df_surv['ABRP_CRF_qualtile'] = pd.qcut(df_surv['ABRP_CRF'], q=4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
     df_surv['ABRP_CRF_qualtile_nm'] = pd.qcut(df_surv['ABRP_CRF'], q=4)
+    
+    #### BMI - ABR
+    df_selected['ABR_CRF_qualtile'] = pd.qcut(df_selected['ABR_CRF'], q=4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
+    df_selected['ABR_CRF_qualtile_nm'] = pd.qcut(df_selected['ABR_CRF'], q=4)
 
-    #### Percentage Fat
+    df_surv['ABR_CRF_qualtile'] = pd.qcut(df_surv['ABR_CRF'], q=4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
+    df_surv['ABR_CRF_qualtile_nm'] = pd.qcut(df_surv['ABR_CRF'], q=4)
+    
+    #### BMI - ABP
+    df_selected['ABP_CRF_qualtile'] = pd.qcut(df_selected['ABP_CRF'], q=4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
+    df_selected['ABP_CRF_qualtile_nm'] = pd.qcut(df_selected['ABP_CRF'], q=4)
+
+    df_surv['ABP_CRF_qualtile'] = pd.qcut(df_surv['ABP_CRF'], q=4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
+    df_surv['ABP_CRF_qualtile_nm'] = pd.qcut(df_surv['ABP_CRF'], q=4)
+
+    #### Percentage Fat - APRP
     df_selected['APRP_CRF_qualtile'] = pd.qcut(df_selected['APRP_CRF'], q=4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
     df_selected['APRP_CRF_qualtile_nm'] = pd.qcut(df_selected['APRP_CRF'], q=4)
 
     df_surv['APRP_CRF_qualtile'] = pd.qcut(df_surv['APRP_CRF'], q=4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
     df_surv['APRP_CRF_qualtile_nm'] = pd.qcut(df_surv['APRP_CRF'], q=4)
+    
+    #### Percentage Fat - APR
+    df_selected['APR_CRF_qualtile'] = pd.qcut(df_selected['APR_CRF'], q=4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
+    df_selected['APR_CRF_qualtile_nm'] = pd.qcut(df_selected['APR_CRF'], q=4)
+
+    df_surv['APR_CRF_qualtile'] = pd.qcut(df_surv['APR_CRF'], q=4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
+    df_surv['APR_CRF_qualtile_nm'] = pd.qcut(df_surv['APR_CRF'], q=4)
+    
+    #### Percentage Fat - APP
+    df_selected['APP_CRF_qualtile'] = pd.qcut(df_selected['APP_CRF'], q=4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
+    df_selected['APP_CRF_qualtile_nm'] = pd.qcut(df_selected['APP_CRF'], q=4)
+
+    df_surv['APP_CRF_qualtile'] = pd.qcut(df_surv['APP_CRF'], q=4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
+    df_surv['APP_CRF_qualtile_nm'] = pd.qcut(df_surv['APP_CRF'], q=4)
 
     return df_selected, df_surv

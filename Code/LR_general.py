@@ -13,8 +13,8 @@ import os
 
 # %% Load dataset
 DATA_PATH = "/Users/lkh256/Studio/VO2max_Prediction/Data"
-df_init = datatable.fread(os.path.join(DATA_PATH, 'healthy_eq.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
-df_surv = datatable.fread(os.path.join(DATA_PATH, 'healthy_survival.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
+df_init = datatable.fread(os.path.join(DATA_PATH, 'general_eq.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
+df_surv = datatable.fread(os.path.join(DATA_PATH, 'general_survival.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
 df_init['SM_DATE'] = df_init['SM_DATE'].astype('datetime64')
 df_surv['SM_DATE'] = df_surv['SM_DATE'].astype('datetime64')
 print("Number of samples = {}".format(len(df_init)))
@@ -43,12 +43,12 @@ group_by = 'sex'
 dem_table = TableOne(data=df_selected, columns=columns, categorical=categorical, groupby=group_by, pval=True)
 
 display(dem_table)
-dem_table.to_excel("../Results/MF_health_eq_demo_stats.xlsx")
+dem_table.to_excel("../Results/MF_general_eq_demo_stats.xlsx")
 
 dem_table = TableOne(data=df_surv, columns=columns, categorical=categorical, groupby=group_by, pval=True)
 
 display(dem_table)
-dem_table.to_excel("../Results/MF_health_all_demo_stats.xlsx")
+dem_table.to_excel("../Results/MF_general_all_demo_stats.xlsx")
 
 # %% Variable correlation
 plt.figure(figsize=(12, 10))
@@ -78,8 +78,8 @@ df_selected, df_surv = make_model_tertile(df_selected, df_surv, X_train, y_train
 display(df_selected.head(), df_surv.head())
 # %% Save results
 
-df_selected.to_csv('../Results/MF_health_eq_for_surv.csv', index=False, encoding='utf-8-sig')
-df_surv.to_csv('../Results/MF_health_all_for_surv.csv', index=False, encoding='utf-8-sig')
+df_selected.to_csv('../Results/MF_general_eq_for_surv.csv', index=False, encoding='utf-8-sig')
+df_surv.to_csv('../Results/MF_general_all_for_surv.csv', index=False, encoding='utf-8-sig')
 
 # %% Tran-test split for validation - Male
 df_selected_m = df_selected[df_selected['sex'] == 0]
@@ -105,8 +105,8 @@ df_selected_m, df_surv_m = make_model_tertile(df_selected_m, df_surv_m, X_train,
 display(df_selected_m.head(), df_surv_m.head())
 # %% Save results
 
-df_selected_m.to_csv('../Results/M_health_eq_for_surv.csv', index=False, encoding='utf-8-sig')
-df_surv_m.to_csv('../Results/M_health_all_for_surv.csv', index=False, encoding='utf-8-sig')
+df_selected_m.to_csv('../Results/M_general_eq_for_surv.csv', index=False, encoding='utf-8-sig')
+df_surv_m.to_csv('../Results/M_general_all_for_surv.csv', index=False, encoding='utf-8-sig')
 
 # %% Tran-test split for validation - Female
 df_selected_f = df_selected[df_selected['sex'] == 1]
@@ -132,6 +132,6 @@ df_selected_f, df_surv_f = make_model_tertile(df_selected_f, df_surv_f, X_train,
 display(df_selected_f.head(), df_surv_f.head())
 # %% Save results
 
-df_selected_f.to_csv('../Results/F_health_eq_for_surv.csv', index=False, encoding='utf-8-sig')
-df_surv_f.to_csv('../Results/F_health_all_for_surv.csv', index=False, encoding='utf-8-sig')
+df_selected_f.to_csv('../Results/F_general_eq_for_surv.csv', index=False, encoding='utf-8-sig')
+df_surv_f.to_csv('../Results/F_general_all_for_surv.csv', index=False, encoding='utf-8-sig')
 # %%

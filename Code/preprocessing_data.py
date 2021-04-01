@@ -49,6 +49,11 @@ def cal_bmi_crf_asmi(df):
 
 #### Smoking
 df_init['Smoke'] = np.where(df_init['SMK'] == 2, 1, 0)
+
+#### Alcohol
+df_init['ALC'] = np.where(df_init['ALC_YS'] == 1, 1, 0)
+
+#### Sex
 df_init['sex'] = np.where(df_init['GEND_CD'] == 'M', 0, 1)
 
 #### Select rows that RER over the goldenstandard
@@ -145,8 +150,11 @@ df_init['Exclude_General'] = np.where(df_init[['HTN_med', 'Stroke', 'Angina', 'M
 display(df_init.head(1))
 
 #### Exclude outlier
-for i in df_init[['SM3631', 'VO2max', 'SM0104', 'ASMI']].columns:
-    df_init = df_init[(df_init[i] >= df_init[i].quantile(0.005)) & (df_init[i] <= df_init[i].quantile(0.995))]
+for i in df_init[['SM3631', 'SM0104', 'SM3720']].columns:
+    if i == 'SM3720':
+        df_init = df_init[(df_init[i] <= df_init[i].quantile(0.999))]
+    else:
+        df_init = df_init[(df_init[i] >= df_init[i].quantile(0.005)) & (df_init[i] <= df_init[i].quantile(0.995))]
 
 # %% Select dataset
 df_healthy = df_init[df_init['Exclude_Healthy'] != 1]
@@ -164,7 +172,8 @@ print("Number of general population in eq set = {}".format(len(set(df_general_eq
 columns_to_use = ['SM_DATE', 'HPCID', 'sex', 'AGE', 'SM0104', 'SM0101', 
                 'SM0102', 'SM316001', 'MVPA', 'SM3631', 'Smoke', 'SM3720', 'SM0106', 'SM0111', 
                 'SM0112', 'SM0126', 'SM0151', 'SM0152', 'SM0153', 'SM0154', 'SM0155', 'SM3140', 
-                'SM3150', 'SM3170', 'max_heart_rate', 'BMI_cal', 'ASMI', 'VO2max', 'death', 'delta_time']
+                'SM3150', 'SM3170', 'max_heart_rate', 'BMI_cal', 'ASMI', 'VO2max', 'death', 'delta_time', 
+                'Diabetes', 'Hypertension', 'HTN_med', 'Hyperlipidemia', 'Hepatatis', 'ALC']
 
 columns_to_rename = {'SM0104':'percentage_fat', 'SM0101':'Height', 
                     'SM0102':'Weight', 'SM316001': 'BMI', 
@@ -186,7 +195,7 @@ df_general_eq = df_general_eq[columns_to_use].rename(columns = columns_to_rename
 # %%
 display(df_general_eq.head())
 # %%
-for i in ['rest_HR', 'VO2max', 'percentage_fat','ASMI']:
+for i in ['rest_HR', 'CRF', 'percentage_fat','ASMI']:
     print(i, "Qualtile")
     print("0% : ", df_general_eq[i].quantile(0))
     print("1% : ", df_general_eq[i].quantile(0.01))
@@ -201,3 +210,5 @@ df_healthy.to_csv("../Data/healthy_survival.csv", encoding='utf-8-sig', index=Fa
 df_healthy_eq.to_csv("../Data/healthy_eq.csv", encoding='utf-8-sig', index=False)
 df_general.to_csv("../Data/general_survival.csv", encoding='utf-8-sig', index=False)
 df_general_eq.to_csv("../Data/general_eq.csv", encoding='utf-8-sig', index=False)
+
+# %%
