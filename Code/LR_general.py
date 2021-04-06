@@ -12,7 +12,7 @@ pd.set_option("display.max_columns", None)
 import os
 
 # %% Load dataset
-DATA_PATH = "/Users/lkh256/Studio/VO2max_Prediction/Data"
+DATA_PATH = "/home/lkh256/Studio/VO2max_Prediction/Data"
 df_init = datatable.fread(os.path.join(DATA_PATH, 'general_eq.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
 df_surv = datatable.fread(os.path.join(DATA_PATH, 'general_survival.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
 df_init['SM_DATE'] = df_init['SM_DATE'].astype('datetime64')
@@ -38,7 +38,7 @@ display(df_selected.head(), df_surv.head())
 
 # %% Demographic statics
 from tableone import TableOne
-columns = ['AGE', 'percentage_fat', 'BMI', 'HDL-C', 'MVPA', 'rest_HR', 'VO2max', 'CRF', 'max_heart_rate', 'ASMI', 'Smoke', 'ALC', 'death']
+columns = ['AGE', 'percentage_fat', 'BMI', 'HDL_C', 'MVPA', 'rest_HR', 'VO2max', 'CRF', 'max_heart_rate', 'ASMI', 'Smoke', 'ALC', 'death']
 
 categorical = ['MVPA', 'Smoke', 'death', 'ALC']
 

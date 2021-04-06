@@ -10,40 +10,40 @@ from sklearn.linear_model import LinearRegression
 from IPython.display import display
 pd.set_option("display.max_columns", None)
 import os
+import kaplanmeier as km
 
 # %%
-DATA_PATH = "/Users/lkh256/Studio/VO2max_Prediction/Data/Survival_set"
-df_health = datatable.fread(os.path.join(DATA_PATH, 'health_survival.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
-df_health['ALC'] = np.where(df_health['ALC_YS'] == 1, 1, 0)
+DATA_PATH = '/home/lkh256/Studio/VO2max_Prediction/Data/Survival_set'
+df_init = datatable.fread(os.path.join(DATA_PATH, 'MF_general_all_survival.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
+display(df_init.head())
 # %%
-display(df_health.head())
+#### make input variable for kaplanmeier curve
+time_event = df_init['delta_time'].astype(int)
+censoring = df_init['death'].astype(int)
+labx = df_init['CRF_tertile']
 
-# %%
-target_var = ['death', 'delta_time']
-input_focus_var = ['ABRP_VO2max']
-input_adjust_var = ['Smoke', 'ALC', 'sex', 'BMI', 'Diabetes', 'Hypertension', 'Hyperlipidemia', 'Hepatatis', 'Stroke', 'Angina']
-# input_adjust_var = ['Smoke', 'ALC', 'sex', 'BMI', 'MVPA', 'Diabetes', 'Hypertension', 'HTN_med', 
-#              'Hyperlipidemia', 'Hepatatis', 'Stroke', 'Angina', 'MI', 'Asthma', 'Cancer']
-y = df_health[target_var].to_records(index=False)
-X = df_health[input_focus_var + input_adjust_var].astype(float)
+out = km.fit(time_event, censoring, labx)
 
-# %%
-from sksurv.linear_model import CoxPHSurvivalAnalysis
-cox_model = CoxPHSurvivalAnalysis(alpha=0, ties="breslow", n_iter=100, tol=1e-9, verbose=0)
-cox_model.fit(X, y)
-# %%
-from sksurv.datasets import load_whas500
-X, y = load_whas500()
-estimator = CoxPHSurvivalAnalysis().fit(X, y)
-chf_funcs = estimator.predict_cumulative_hazard_function(X.iloc[:10])
-for fn in chf_funcs:
-    plt.step(fn.x, fn(fn.x), where="post")
-plt.ylim(0, 1)
+km.plot(out, cmap='Set2', cii_lines='line', cii_alpha=0.05)
 plt.show()
-# %%
-np.array(zip(df_health[target_var[0]], df_health[target_var[1]]))
-# %%
-df_health[target_var].to_records(index=False)
-# %%
-X.isnull().sum()
+
+# %% 
+from lifelines import datasets, CoxPHFitter
+from patsy import dmatrices
+
+df_init[['delta_time', 'death', 'sex', 'Smoke', 'ALC', 'MVPA', 'Diabetes', 'Hypertension', 'Hyperlipidemia', 'Hepatatis']] = df_init[['delta_time', 'death', 'sex', 'Smoke', 'ALC', 'MVPA', 'Diabetes', 'Hypertension', 'Hyperlipidemia', 'Hepatatis']].astype(int)
+
+model_expr = "delta_time ~ AGE + sex + BMI + Smoke + ALC + MVPA + Diabetes \
+    + Hypertension + Hyperlipidemia + Hepatatis + max_heart_rate \
+    + MBP + ABR_CRF_tertile + death + delta_time"
+y, X = dmatrices(model_expr, df_init, return_type='dataframe')
+
+cph = CoxPHFitter().fit(X, 'delta_time', 'death')
+print(cph.print_summary())
+#cph.plot_partial_effects_on_outcome('ABRP_CRF', values=range(0, 14, 1) , cmap='coolwarm')
+plt.figure(figsize=(20, 20))
+ax = cph.plot_partial_effects_on_outcome(covariates=['ABR_CRF_tertile[T.T2]', 'ABR_CRF_tertile[T.T3]'], 
+                                    values=[(1, 0), (0, 1)])
+plt.show(ax, figsize=(10, 10))
+
 # %%
