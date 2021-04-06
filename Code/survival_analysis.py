@@ -13,11 +13,7 @@ import os
 import kaplanmeier as km
 
 # %%
-<<<<<<< HEAD
 DATA_PATH = '/home/lkh256/Studio/VO2max_Prediction/Data/Survival_set'
-=======
-DATA_PATH = '/Users/lkh256/Studio/VO2max_Prediction/Data/Survival_set'
->>>>>>> 9455cafd5b79313d69aca94340002ba11743eee7
 df_init = datatable.fread(os.path.join(DATA_PATH, 'MF_general_all_survival.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
 display(df_init.head())
 # %%
