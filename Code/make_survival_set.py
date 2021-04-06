@@ -36,15 +36,22 @@ print(len(df_health))
 print(len(df_general))
 
 # %%
-default_column = ['HPCID', 'SM_DATE', 'AGE', 'sex', 'death', 'delta_time', 'visit_num', 'CRF', 'ABRP_VO2max', 
-                  'ABRP_CRF', 'ABR_VO2max', 'ABR_CRF','ABP_VO2max', 'ABP_CRF', 'APRP_VO2max', 
-                  'APRP_CRF', 'APR_VO2max', 'APR_CRF', 'APP_VO2max', 'APP_CRF', 'CRF_tertile', 
-                  'CRF_tertile_nm', 'ABRP_CRF_tertile', 'ABRP_CRF_tertile_nm', 'APRP_CRF_tertile', 
-                  'APRP_CRF_tertile_nm', 'CRF_qualtile', 'CRF_qualtile_nm', 'ABRP_CRF_qualtile', 
-                  'ABRP_CRF_qualtile_nm', 'APRP_CRF_qualtile', 'APRP_CRF_qualtile_nm']
+default_column = ['HPCID', 'SM_DATE', 'AGE', 'sex', 'death', 'delta_time', 'visit_num', 
+                  'CRF', 'ABRP_VO2max', 'ABRP_CRF', 'ABR_VO2max', 'ABR_CRF', 
+                  'ABP_VO2max', 'ABP_CRF', 'APRP_VO2max', 'APRP_CRF', 'APR_VO2max',
+                  'APR_CRF', 'APP_VO2max', 'APP_CRF', 'CRF_tertile', 'CRF_tertile_nm',
+                  'ABRP_CRF_tertile', 'ABRP_CRF_tertile_nm', 'ABR_CRF_tertile',
+                  'ABR_CRF_tertile_nm', 'ABP_CRF_tertile', 'ABP_CRF_tertile_nm',
+                  'APRP_CRF_tertile', 'APRP_CRF_tertile_nm', 'APR_CRF_tertile',
+                  'APR_CRF_tertile_nm', 'APP_CRF_tertile', 'APP_CRF_tertile_nm',
+                  'CRF_qualtile', 'CRF_qualtile_nm', 'ABRP_CRF_qualtile',
+                  'ABRP_CRF_qualtile_nm', 'ABR_CRF_qualtile', 'ABR_CRF_qualtile_nm',
+                  'ABP_CRF_qualtile', 'ABP_CRF_qualtile_nm', 'APRP_CRF_qualtile',
+                  'APRP_CRF_qualtile_nm', 'APR_CRF_qualtile', 'APR_CRF_qualtile_nm',
+                  'APP_CRF_qualtile', 'APP_CRF_qualtile_nm']
 
 select_column = ['Smoke', 'ALC', 'sex', 'BMI', 'MVPA', 'Diabetes', 'Hypertension', 
-                 'Hyperlipidemia', 'Hepatatis']
+                 'Hyperlipidemia', 'Hepatatis', 'max_heart_rate', 'HDL-C', 'MBP']
 
 # 'Stroke', 'Angina', 'MI', 'Asthma', 'Cancer'
 

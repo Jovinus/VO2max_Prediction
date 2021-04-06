@@ -45,6 +45,7 @@ def cal_bmi_crf_asmi(df):
     df["BMI_cal"] = df.apply(lambda x: x['SM0102']/((x['SM0101']/100)**2), axis=1)
     df['VO2max'] = df['SM3720'] * 3.5
     df['ASMI'] = df[['SM0151', 'SM0152', 'SM0154', 'SM0155']].sum(axis=1) / ((df['SM0101']/100)**2)
+    df['MBP'] = df['SM0600DBP'] + 0.4 * (df['SM0600SBP'] - df['SM0600DBP'])
     return df
 
 #### Smoking
@@ -173,7 +174,7 @@ columns_to_use = ['SM_DATE', 'HPCID', 'sex', 'AGE', 'SM0104', 'SM0101',
                 'SM0102', 'SM316001', 'MVPA', 'SM3631', 'Smoke', 'SM3720', 'SM0106', 'SM0111', 
                 'SM0112', 'SM0126', 'SM0151', 'SM0152', 'SM0153', 'SM0154', 'SM0155', 'SM3140', 
                 'SM3150', 'SM3170', 'max_heart_rate', 'BMI_cal', 'ASMI', 'VO2max', 'death', 'delta_time', 
-                'Diabetes', 'Hypertension', 'HTN_med', 'Hyperlipidemia', 'Hepatatis', 'ALC']
+                'Diabetes', 'Hypertension', 'HTN_med', 'Hyperlipidemia', 'Hepatatis', 'ALC', 'BL3142', 'MBP', 'max_heart_rate']
 
 columns_to_rename = {'SM0104':'percentage_fat', 'SM0101':'Height', 
                     'SM0102':'Weight', 'SM316001': 'BMI', 
@@ -183,7 +184,7 @@ columns_to_rename = {'SM0104':'percentage_fat', 'SM0101':'Height',
                     'SM0151':'Muscle_mass(RA)', 'SM0152':'Muscle_mass(LA)', 
                     'SM0153':'Muscle_mass(BODY)', 'SM0154':'Muscle_mass(RL)', 
                     'SM0155':'Muscle_mass(LL)', 'SM3140':'체지방량', 
-                    'SM3150':'체수분량', 'SM3170':'제지방량'}
+                    'SM3150':'체수분량', 'SM3170':'제지방량', 'BL3142':"HDL-C"}
 
 
 df_healthy.rename(columns= columns_to_rename, inplace=True)

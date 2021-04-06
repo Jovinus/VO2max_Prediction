@@ -235,3 +235,4 @@ def make_model_tertile(df_selected, df_surv, X_train, y_train, X_test, y_test, s
     df_surv['APP_CRF_qualtile_nm'] = pd.qcut(df_surv['APP_CRF'], q=4)
 
     return df_selected, df_surv
+

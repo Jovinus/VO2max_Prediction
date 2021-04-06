@@ -17,6 +17,10 @@ df_init = datatable.fread(os.path.join(DATA_PATH, 'healthy_eq.csv'), encoding='u
 df_surv = datatable.fread(os.path.join(DATA_PATH, 'healthy_survival.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
 df_init['SM_DATE'] = df_init['SM_DATE'].astype('datetime64')
 df_surv['SM_DATE'] = df_surv['SM_DATE'].astype('datetime64')
+
+df_init = df_init.fillna(df_init.median())
+df_surv = df_surv.fillna(df_surv.median())
+
 print("Number of samples = {}".format(len(df_init)))
 display(df_init.head())
 
@@ -34,9 +38,9 @@ display(df_selected.head(), df_surv.head())
 
 # %% Demographic statics
 from tableone import TableOne
-columns = ['AGE', 'percentage_fat', 'BMI', 'MVPA', 'rest_HR', 'VO2max', 'CRF', 'ASMI', 'Smoke', 'death']
+columns = ['AGE', 'percentage_fat', 'BMI', 'HDL-C', 'MVPA', 'rest_HR', 'VO2max', 'CRF', 'max_heart_rate', 'ASMI', 'Smoke', 'ALC', 'death']
 
-categorical = ['MVPA', 'Smoke', 'death']
+categorical = ['MVPA', 'Smoke', 'death', 'ALC']
 
 group_by = 'sex'
 
