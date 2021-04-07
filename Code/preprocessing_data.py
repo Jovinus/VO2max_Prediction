@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # %% Read Data for preprocessing
-DATA_PATH = '/Users/lkh256/Documents/Studio/VO2max/Data'
+DATA_PATH = '/home/lkh256/Studio/VO2max_Prediction/Data/raw_data'
 df_init = pd.DataFrame([])
 for i in glob.glob(os.path.join(DATA_PATH, 'DATA*.csv')):
     df_init = pd.concat((df_init, datatable.fread(i, encoding='CP949', na_strings=['', 'NA']).to_pandas()), axis=0)
@@ -23,7 +23,7 @@ print("Number of patients = {}".format(len(set(df_init['HPCID']))))
 display(df_init.head(1))
 
 # %%
-df_death = pd.read_excel(os.path.join(DATA_PATH, '행안부사망확인_건강검진.xlsx'))
+df_death = pd.read_excel(os.path.join(DATA_PATH, 'HPC_death_2019_06_18.xlsx'))
 df_death['death_date'] = df_death['사망일'].astype('datetime64')
 df_id = pd.read_excel(os.path.join(DATA_PATH, 'VO2peak_HPCID.xlsx'))
 display(df_death.head(), df_id.head())
@@ -157,16 +157,24 @@ for i in df_init[['SM3631', 'SM0104', 'SM3720']].columns:
     else:
         df_init = df_init[(df_init[i] >= df_init[i].quantile(0.005)) & (df_init[i] <= df_init[i].quantile(0.995))]
 
+print("Number of population in set = {}".format(len(set(df_init['CDW_NO']))))
+print("Number of Male in set = {}".format(len(set(df_init[df_init['GEND_CD'] == 'M']['CDW_NO']))))
+print("Number of Female in set = {}".format(len(set(df_init[df_init['GEND_CD'] == 'F']['CDW_NO']))))
+
 # %% Select dataset
 df_healthy = df_init[df_init['Exclude_Healthy'] != 1]
 print("Number of healthy population = {}".format(len(set(df_healthy['CDW_NO']))))
 df_general = df_init[df_init['Exclude_General'] != 1]
 print("Number of general population = {}".format(len(set(df_general['CDW_NO']))))
+print("Number of Male in general set = {}".format(len(set(df_general[df_general['GEND_CD'] == 'M']['CDW_NO']))))
+print("Number of Female in general set = {}".format(len(set(df_general[df_general['GEND_CD'] == 'F']['CDW_NO']))))
 
 df_healthy_eq = df_healthy[df_healthy['RER_over_gs'] == 1]
 print("Number of healthy population in eq set = {}".format(len(set(df_healthy_eq['CDW_NO']))))
 df_general_eq = df_general[df_general['RER_over_gs'] == 1]
 print("Number of general population in eq set = {}".format(len(set(df_general_eq['CDW_NO']))))
+print("Number of Male in eq set = {}".format(len(set(df_general_eq[df_general_eq['GEND_CD'] == 'M']['CDW_NO']))))
+print("Number of Female in eq set = {}".format(len(set(df_general_eq[df_general_eq['GEND_CD'] == 'F']['CDW_NO']))))
 
 # %% Change columnn Name
 

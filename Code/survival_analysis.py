@@ -14,7 +14,7 @@ import kaplanmeier as km
 
 # %%
 DATA_PATH = '/home/lkh256/Studio/VO2max_Prediction/Data/Survival_set'
-df_init = datatable.fread(os.path.join(DATA_PATH, 'MF_general_all_survival.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
+df_init = datatable.fread(os.path.join(DATA_PATH, 'MF_general_eq_survival.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
 display(df_init.head())
 # %%
 #### make input variable for kaplanmeier curve
@@ -39,11 +39,27 @@ model_expr = "delta_time ~ AGE + sex + BMI + Smoke + ALC + MVPA + Diabetes \
 y, X = dmatrices(model_expr, df_init, return_type='dataframe')
 
 cph = CoxPHFitter().fit(X, 'delta_time', 'death')
-print(cph.print_summary())
+print(cph.print_summary(style='ascii'))
 #cph.plot_partial_effects_on_outcome('ABRP_CRF', values=range(0, 14, 1) , cmap='coolwarm')
 plt.figure(figsize=(20, 20))
 ax = cph.plot_partial_effects_on_outcome(covariates=['ABR_CRF_tertile[T.T2]', 'ABR_CRF_tertile[T.T3]'], 
                                     values=[(1, 0), (0, 1)])
-plt.show(ax, figsize=(10, 10))
+ax.plot(line_width=2)
 
+# %%
+
+# %%
+fig = plt.figure(figsize=(10, 10))
+ax = fig.add_subplot(111)
+cph = CoxPHFitter().fit(X, 'delta_time', 'death')
+cph.plot_partial_effects_on_outcome(covariates=['ABR_CRF_tertile[T.T2]', 'ABR_CRF_tertile[T.T3]'], 
+                                    values=[(1, 0), (0, 1)], ax=ax)
+plt.legend(['T2', 'T3', 'T1'])
+plt.show()
+
+fig = plt.figure(figsize=(10, 10))
+ax = fig.add_subplot(111)
+cph = CoxPHFitter().fit(X, 'delta_time', 'death')
+cph.plot(ax=ax, hazard_ratios=True)
+plt.show()
 # %%

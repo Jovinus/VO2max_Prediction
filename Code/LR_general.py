@@ -38,9 +38,13 @@ display(df_selected.head(), df_surv.head())
 
 # %% Demographic statics
 from tableone import TableOne
-columns = ['AGE', 'percentage_fat', 'BMI', 'HDL_C', 'MVPA', 'rest_HR', 'VO2max', 'CRF', 'max_heart_rate', 'ASMI', 'Smoke', 'ALC', 'death']
 
-categorical = ['MVPA', 'Smoke', 'death', 'ALC']
+columns = ['AGE', 'percentage_fat', 'BMI', 'HDL_C', 'rest_HR', 'VO2max', 'CRF', 
+           'max_heart_rate', 'ASMI', 'Smoke', 'ALC', 'MVPA', 'Diabetes', 'Hypertension', 
+           'Hyperlipidemia', 'Hepatatis', 'death']
+
+categorical = ['MVPA', 'Smoke', 'death', 'ALC', 'Diabetes', 
+               'Hypertension', 'Hyperlipidemia', 'Hepatatis']
 
 group_by = 'sex'
 
@@ -55,8 +59,8 @@ display(dem_table)
 dem_table.to_excel("../Results/MF_general_all_demo_stats.xlsx")
 
 # %% Variable correlation
-plt.figure(figsize=(12, 10))
-sns.heatmap(df_selected[columns].corr(), annot=True, fmt = '.2f', linewidths=.5, cmap='Blues', annot_kws={'size':15})
+plt.figure(figsize=(10, 10))
+sns.heatmap(df_selected[columns].corr(), annot=True, fmt = '.2f', linewidths=.5, cmap='Blues', annot_kws={'size':10})
 plt.show()
 
 # %% Tran-test split for validation
@@ -105,6 +109,13 @@ There is two types of model that estimate VO2max(CRF)
 Adjusted with age, rest_HR, MVPA
 -----------------------------------------------------------------------------------
 """
+
+#### Correlation Matrix
+plt.figure(figsize=(10, 10))
+sns.heatmap(df_selected_m[columns].corr(), annot=True, fmt = '.2f', linewidths=.5, cmap='Blues', annot_kws={'size':10})
+plt.show()
+
+#### Make tertile 
 df_selected_m, df_surv_m = make_model_tertile(df_selected_m, df_surv_m, X_train, y_train, X_test, y_test)
 display(df_selected_m.head(), df_surv_m.head())
 # %% Save results
@@ -132,6 +143,12 @@ There is two types of model that estimate VO2max(CRF)
 Adjusted with age, rest_HR, MVPA
 -----------------------------------------------------------------------------------
 """
+#### Correlation Matrix
+plt.figure(figsize=(10, 10))
+sns.heatmap(df_selected_f[columns].corr(), annot=True, fmt = '.2f', linewidths=.5, cmap='Blues', annot_kws={'size':10})
+plt.show()
+
+#### Make tertile 
 df_selected_f, df_surv_f = make_model_tertile(df_selected_f, df_surv_f, X_train, y_train, X_test, y_test)
 display(df_selected_f.head(), df_surv_f.head())
 # %% Save results

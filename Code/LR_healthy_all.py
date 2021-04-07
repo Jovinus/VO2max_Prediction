@@ -38,9 +38,12 @@ display(df_selected.head(), df_surv.head())
 
 # %% Demographic statics
 from tableone import TableOne
-columns = ['AGE', 'percentage_fat', 'BMI', 'HDL_C', 'MVPA', 'rest_HR', 'VO2max', 'CRF', 'max_heart_rate', 'ASMI', 'Smoke', 'ALC', 'death']
+columns = ['AGE', 'percentage_fat', 'BMI', 'HDL_C', 'rest_HR', 'VO2max', 'CRF', 
+           'max_heart_rate', 'ASMI', 'Smoke', 'ALC', 'MVPA', 'Diabetes', 'Hypertension', 
+           'Hyperlipidemia', 'Hepatatis', 'death']
 
-categorical = ['MVPA', 'Smoke', 'death', 'ALC']
+categorical = ['MVPA', 'Smoke', 'death', 'ALC', 'Diabetes', 
+               'Hypertension', 'Hyperlipidemia', 'Hepatatis']
 
 group_by = 'sex'
 
