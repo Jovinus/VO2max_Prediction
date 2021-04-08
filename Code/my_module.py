@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.metrics import mean_squared_error
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, ElasticNet, Lasso
 import pandas as pd
 
 def adjusted_r2(model, x, y):
@@ -24,12 +24,19 @@ def get_metric(model, X_train, y_train, X_test, y_test):
 
 
 def make_model_get_metrics(X_train, y_train, X_test, y_test, column_mask):
+    # linear_model = ElasticNet()
+    # linear_model = Lasso()
     linear_model = LinearRegression(n_jobs=-1)
     linear_model.fit(X_train[column_mask], y_train)
-
-    print(linear_model.coef_)
-    print(linear_model.intercept_)
-
+    
+    equation = "\nEquation : "
+    
+    for i, variable in enumerate(column_mask):
+        equation = equation + str(linear_model.coef_[i]) + '*' + str(variable) + ' + '
+        
+    equation = equation + str(linear_model.intercept_)
+    print(equation)
+    
     get_metric(linear_model, X_train=X_train[column_mask], X_test=X_test[column_mask],
             y_train=y_train, y_test=y_test)
     return linear_model

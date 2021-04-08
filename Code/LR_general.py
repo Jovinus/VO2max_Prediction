@@ -116,7 +116,7 @@ sns.heatmap(df_selected_m[columns].corr(), annot=True, fmt = '.2f', linewidths=.
 plt.show()
 
 #### Make tertile 
-df_selected_m, df_surv_m = make_model_tertile(df_selected_m, df_surv_m, X_train, y_train, X_test, y_test)
+df_selected_m, df_surv_m = make_model_tertile(df_selected_m, df_surv_m, X_train, y_train, X_test, y_test, sex_specific=True)
 display(df_selected_m.head(), df_surv_m.head())
 # %% Save results
 
@@ -149,10 +149,12 @@ sns.heatmap(df_selected_f[columns].corr(), annot=True, fmt = '.2f', linewidths=.
 plt.show()
 
 #### Make tertile 
-df_selected_f, df_surv_f = make_model_tertile(df_selected_f, df_surv_f, X_train, y_train, X_test, y_test)
+df_selected_f, df_surv_f = make_model_tertile(df_selected_f, df_surv_f, X_train, y_train, X_test, y_test, sex_specific=True)
 display(df_selected_f.head(), df_surv_f.head())
 # %% Save results
 
 df_selected_f.to_csv('../Results/F_general_eq_for_surv.csv', index=False, encoding='utf-8-sig')
 df_surv_f.to_csv('../Results/F_general_all_for_surv.csv', index=False, encoding='utf-8-sig')
+# %%
+
 # %%
