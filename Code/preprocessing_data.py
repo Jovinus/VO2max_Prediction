@@ -27,11 +27,11 @@ df_death = pd.read_excel(os.path.join(DATA_PATH, 'HPC_death_2019_06_18.xlsx'))
 df_id = pd.read_excel(os.path.join(DATA_PATH, 'VO2peak_HPCID.xlsx'))
 
 df_crp = pd.read_csv(os.path.join(DATA_PATH, 'VO2max_CRP_data.csv'))
-df_crp['SM_DATE'] = df_crp['SM_DATE#2'].astype('datetime64')
+df_crp['SM_DATE'] = df_crp['EXEC_TIME#3'].astype('datetime64')
 df_crp.rename(columns={'CRP#4':'CRP'}, inplace=True)
 
 df_chole = pd.read_csv(os.path.join(DATA_PATH, 'VO2max_chole_data.csv'))
-df_chole['SM_DATE'] = df_chole['SM_DATE#2'].astype('datetime64')
+df_chole['SM_DATE'] = df_chole['EXEC_TIME#3'].astype('datetime64')
 df_chole.rename(columns= {'CHOLESTEROL#4':'CHOLESTEROL', 'TG#5':'TG'}, inplace=True)
 
 df_death['death_date'] = df_death['사망일'].astype('datetime64')
@@ -39,15 +39,19 @@ display(df_death.head(), df_id.head(), df_crp.head(), df_chole.head())
 # %%
 #### Merge data
 df_init = pd.merge(df_init, df_id, left_on=['HPCID'], right_on=['HPCID'], how='left')
+
+print(df_init.shape)
 df_init = pd.merge(df_init, df_death[['ptno', 'death_date']], 
                    left_on=['CDW_NO'], right_on=['ptno'], how='left').drop(columns='ptno')
-df_init = pd.merge(df_init, df_crp[['환자번호#1', 'SM_DATE', 'CRP']], 
-                   left_on=['CDW_NO'], right_on=['환자번호#1'], how='left').drop(columns='환자번호#1')
-df_init = pd.merge(df_init, df_chole[['환자번호#1', 'SM_DATE', 'CHOLESTEROL', 'TG']], 
-                   left_on=['CDW_NO'], right_on=['환자번호#1'], how='left').drop(columns='환자번호#1')
+print(df_init.shape)
+df_init = pd.merge(df_init, df_crp[['환자번호#1', 'SM_DATE', 'CRP']].drop_duplicates(), 
+                   left_on=['CDW_NO', 'SM_DATE'], right_on=['환자번호#1', 'SM_DATE'], how='left').drop(columns='환자번호#1')
+print(df_init.shape)
+df_init = pd.merge(df_init, df_chole[['환자번호#1', 'SM_DATE', 'CHOLESTEROL', 'TG']].drop_duplicates(), 
+                   left_on=['CDW_NO', 'SM_DATE'], right_on=['환자번호#1', 'SM_DATE'], how='left').drop(columns='환자번호#1')
+print(df_init.shape)
 
 display(df_init.head())
-
 # %% Define derived variables 
 
 #### Survival variable
@@ -98,13 +102,18 @@ def is_MVPA(df):
     df['tmp_phy_freq'] = df['PHY_FREQ'].map(freq_mapper)
 
     df['tmp_phy_act'] = df['tmp_phy_freq'] * df['tmp_phy_duration']
+    
+    df['tmp_act_mets'] = df['OVERALL_PHYSICAL_ACTIVITY'].map({0:0, 1:3.3, 1:4, 2:8})
+    df['METs_week'] =  df['tmp_act_mets'] * df['tmp_phy_act']
+    df['METs_week'] = np.where(df['METs_week'].isnull(), 0, df['METs_week'])
+    
 
     #### Define MVPA(yes = 1/no = 0)
     df['MVPA'] = np.where(df['OVERALL_PHYSICAL_ACTIVITY'].isin([1, 2]) & (df['tmp_phy_act'] >= 150), 1, 0)
 
     display(df['MVPA'].value_counts(dropna=False))
     
-    return df.drop(columns=['tmp_phy_duration', 'tmp_phy_freq', 'tmp_phy_act'])
+    return df.drop(columns=['tmp_phy_duration', 'tmp_phy_freq', 'tmp_phy_act', 'tmp_act_mets'])
 
 #### Define disease to exclude
 def have_disease(df):
@@ -166,6 +175,9 @@ df_init = have_disease(df_init)
 df_init['Exclude_Healthy'] = np.where(df_init[['Hypertension', 'Stroke', 'Angina', 'MI', 'Asthma', 'Cancer']].isin([1]).any(axis=1), 1, 0)
 df_init['Exclude_General'] = np.where(df_init[['HTN_med', 'Stroke', 'Angina', 'MI', 'Asthma', 'Cancer']].isin([1]).any(axis=1), 1, 0)
 display(df_init.head(1))
+
+df_init.to_csv('../Data/processed_whole_set.csv', index=False, encoding='utf-8-sig')
+#%% Exlucde Oultier
 
 #### Exclude outlier
 for i in df_init[['SM3631', 'SM0104', 'SM3720']].columns:
