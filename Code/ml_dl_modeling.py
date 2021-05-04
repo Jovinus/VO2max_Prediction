@@ -55,7 +55,7 @@ plt.show()
 # %% Tran-test split for validation
 from sklearn.model_selection import train_test_split
 
-columns = ['AGE', 'percentage_fat', 'BMI', 'HDL_C', 'rest_HR', 
+columns = ['AGE', 'sex', 'percentage_fat', 'BMI', 'HDL_C', 'rest_HR', 
            'ASMI', 'Smoke', 'ALC', 'MVPA', 'Diabetes', 'Hypertension', 
            'Hyperlipidemia', 'Hepatatis']
 
@@ -69,32 +69,6 @@ print("Train set size = {}".format(len(X_train)))
 print("Test set size = {}".format(len(X_test)))
 # %% CatBoostRegressor
 from catboost import CatBoostRegressor
-model = CatBoostRegressor(learning_rate=0.03, iterations=1000, task_type='GPU')
-model.fit(X_train, y_train, verbose=0, cat_features=categorical)
-get_metric(model=model, X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test)
-shap.initjs()
-explainer = shap.TreeExplainer(model)
-shap_values = explainer.shap_values(X_test)
-shap.summary_plot(shap_values, X_test, plot_size=(10,5))
-shap.summary_plot(shap_values, X_test, plot_type='bar')
-
-# %% Tran-test split for validation
-from sklearn.model_selection import train_test_split
-
-columns = ['AGE', 'sex', 'BMI', 'percentage_fat', 'HDL_C', 'rest_HR', 
-           'ASMI', 'Smoke', 'ALC', 'MVPA', 'Diabetes', 'Hypertension', 
-           'Hyperlipidemia', 'Hepatatis']
-
-categorical = ['MVPA', 'Smoke', 'ALC', 'Diabetes', 'sex',
-               'Hypertension', 'Hyperlipidemia', 'Hepatatis']
-
-X_train, X_test, y_train, y_test = train_test_split(df_selected[columns],
-                                                    df_selected['VO2max'], random_state=1004, stratify=df_selected['sex'],
-                                                    test_size=0.2)
-print("Train set size = {}".format(len(X_train)))
-print("Test set size = {}".format(len(X_test)))
-# %% CatBoostRegressor
-from catboost import CatBoostRegressor
 model = CatBoostRegressor(learning_rate=0.03, iterations=15000, task_type='GPU')
 model.fit(X_train, y_train, verbose=0, cat_features=categorical)
 get_metric(model=model, X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test)
@@ -103,4 +77,46 @@ explainer = shap.TreeExplainer(model)
 shap_values = explainer.shap_values(X_test)
 shap.summary_plot(shap_values, X_test, plot_size=(10,5))
 shap.summary_plot(shap_values, X_test, plot_type='bar')
+
+### 해석할 때 Permutation 해야하는데 오래걸림
+tmp = pd.DataFrame({'feature':model.feature_names_, 'importance':model.feature_importances_})
+plt.figure(figsize=(10,10))
+plt.title('Feature Importance of Variables', fontsize=18)
+plt.xticks(fontsize=18)
+plt.yticks(fontsize=18)
+sns.barplot(data=tmp.sort_values('importance', ascending=False), x='importance', y='feature')
+plt.show()
+
+# %% Tran-test split for validation
+from sklearn.model_selection import train_test_split
+
+columns = ['AGE', 'sex', 'BMI', 'rest_HR', 'MVPA']
+
+categorical = ['MVPA', 'sex']
+
+X_train, X_test, y_train, y_test = train_test_split(df_selected[columns],
+                                                    df_selected['VO2max'], random_state=1004, stratify=df_selected['sex'],
+                                                    test_size=0.3)
+print("Train set size = {}".format(len(X_train)))
+print("Test set size = {}".format(len(X_test)))
+# %% CatBoostRegressor
+from catboost import CatBoostRegressor
+model = CatBoostRegressor(learning_rate=0.03, iterations=1000, task_type='GPU')
+model.fit(X_train, y_train, verbose=0, cat_features=categorical)
+get_metric(model=model, X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test)
+
+shap.initjs()
+explainer = shap.TreeExplainer(model)
+shap_values = explainer.shap_values(X_test)
+shap.summary_plot(shap_values, X_test, plot_size=(10,5))
+shap.summary_plot(shap_values, X_test, plot_type='bar')
+# %%
+import statsmodels.api as sm
+import numpy as np
+import matplotlib.pyplot as plt
+
+f, ax = plt.subplots(1, figsize = (8,5))
+sm.graphics.mean_diff_plot(y_test, model.predict(X_test), ax = ax)
+
+plt.show()
 # %%
