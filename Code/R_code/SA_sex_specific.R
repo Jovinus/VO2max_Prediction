@@ -5,15 +5,17 @@ library(survival)
 library(survminer)
 library(fastDummies)
 library(data.table)
+library(survminer)
 
 setwd('~/Studio/VO2max_prediction')
-df <- fread("./Data/Survival_set/M_general_eq_survival.csv")
+df <- fread("./Results/M_general_eq_for_surv.csv")
 
 "df <- df %>% 
   mutate_if(is.integer, as.factor)
 
 df <- df %>% 
   mutate_if(is.character, as.factor)"
+
 
 df$Smoke <- as.factor(df$Smoke)
 df$Hypertension <- as.factor(df$Hypertension)
@@ -36,52 +38,62 @@ surv_obejct <- Surv(time = df$delta_time, event=df$death)
 
 ##### Estimated CRF - BMI(ABRP)
 coxph_e <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                   Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + ABRP_CRF, data = df, method = 'breslow')
+                   Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                   MBP + ABRP_CRF, data = df, method = 'breslow')
 ggforest(coxph_e, data= df)
+
 
 ##### Estimated CRF - BMI(ABR)
 coxph_e <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                   Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + ABR_CRF, data = df, method = 'breslow')
+                   Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                   + MBP + ABR_CRF, data = df, method = 'breslow')
 ggforest(coxph_e, data= df)
 
 ##### Estimated CRF - BMI(ABP)
 coxph_e <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                   Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + ABP_CRF, data = df, method = 'breslow')
+                   Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                   + MBP + ABP_CRF, data = df, method = 'breslow')
 ggforest(coxph_e, data= df)
 
 ############################################## BMI Tertile ###########################################################
 
 ##### Estimated CRF Tertile - BMI(ABRP)
 coxph_e_t <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                     Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + ABRP_CRF_tertile , data = df, method = 'breslow')
+                     Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                     + MBP + ABRP_CRF_tertile , data = df, method = 'breslow')
 ggforest(coxph_e_t, data= df)
 
 ##### Estimated CRF Tertile - BMI(ABR)
 coxph_e_t <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                     Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + ABR_CRF_tertile , data = df, method = 'breslow')
+                     Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                     + MBP + ABR_CRF_tertile , data = df, method = 'breslow')
 ggforest(coxph_e_t, data= df)
 
 
 ##### Estimated CRF Tertile - BMI(ABP)
 coxph_e_t <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                     Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + ABP_CRF_tertile , data = df, method = 'breslow')
+                     Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                     + MBP + ABP_CRF_tertile , data = df, method = 'breslow')
 ggforest(coxph_e_t, data= df)
 
 ############################################## BMI Qualtile ###########################################################
 
 ##### Estimated CRF Qualtile - BMI(ABRP)
 coxph_e_t <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                     Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + ABRP_CRF_qualtile, data = df, method = 'breslow')
+                     Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                     + MBP + ABRP_CRF_qualtile, data = df, method = 'breslow')
 ggforest(coxph_e_t, data= df)
 
 ##### Estimated CRF Qualtile - BMI(ABR)
 coxph_e_t <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                     Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + ABR_CRF_qualtile, data = df, method = 'breslow')
+                     Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                     + MBP + ABR_CRF_qualtile, data = df, method = 'breslow')
 ggforest(coxph_e_t, data= df)
 
 ##### Estimated CRF Qualtile - BMI(ABP)
 coxph_e_t <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                     Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + ABP_CRF_qualtile, data = df, method = 'breslow')
+                     Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                     + MBP + ABP_CRF_qualtile, data = df, method = 'breslow')
 ggforest(coxph_e_t, data= df)
 
 
@@ -89,52 +101,61 @@ ggforest(coxph_e_t, data= df)
 
 ##### Estimated CRF - Percentage Fat(ABRP)
 coxph_e <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                   Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + APRP_CRF, data = df, method = 'breslow')
+                   Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                   + MBP + APRP_CRF, data = df, method = 'breslow')
 ggforest(coxph_e, data= df)
 
 ##### Estimated CRF - Percentage Fat(ABR)
 coxph_e <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                   Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + APR_CRF, data = df, method = 'breslow')
+                   Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                   + MBP + APR_CRF, data = df, method = 'breslow')
 ggforest(coxph_e, data= df)
 
 ##### Estimated CRF - Percentage Fat(ABP)
 coxph_e <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                   Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + APP_CRF, data = df, method = 'breslow')
+                   Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                   + MBP + APP_CRF, data = df, method = 'breslow')
 ggforest(coxph_e, data= df)
 
 ############################################## Percentage Fat Tertile ###########################################################
 
 ##### Estimated CRF Tertile - Percentage Fat(APRP)
 coxph_e_t <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                     Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + APRP_CRF_tertile , data = df, method = 'breslow')
+                     Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                     + MBP + APRP_CRF_tertile , data = df, method = 'breslow')
 ggforest(coxph_e_t, data= df)
 
 ##### Estimated CRF Tertile - Percentage Fat(APR)
 coxph_e_t <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                     Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + APR_CRF_tertile , data = df, method = 'breslow')
+                     Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                     + MBP + APR_CRF_tertile , data = df, method = 'breslow')
 ggforest(coxph_e_t, data= df)
 
 
 ##### Estimated CRF Tertile - Percentage Fat(APP)
 coxph_e_t <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                     Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + APP_CRF_tertile , data = df, method = 'breslow')
+                     Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                     + MBP + APP_CRF_tertile , data = df, method = 'breslow')
 ggforest(coxph_e_t, data= df)
 
 ############################################## Percentage Fat Qualtile ###########################################################
 
 ##### Estimated CRF Qualtile - Percentage Fat(APRP)
 coxph_e_t <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                     Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + APRP_CRF_qualtile, data = df, method = 'breslow')
+                     Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                     + MBP + APRP_CRF_qualtile, data = df, method = 'breslow')
 ggforest(coxph_e_t, data= df)
 
 ##### Estimated CRF Qualtile - Percentage Fat(APR)
 coxph_e_t <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                     Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + APR_CRF_qualtile, data = df, method = 'breslow')
+                     Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                     + MBP + APR_CRF_qualtile, data = df, method = 'breslow')
 ggforest(coxph_e_t, data= df)
 
 ##### Estimated CRF Qualtile - Percentage Fat(APP)
 coxph_e_t <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                     Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + APP_CRF_qualtile, data = df, method = 'breslow')
+                     Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                     + MBP + APP_CRF_qualtile, data = df, method = 'breslow')
 ggforest(coxph_e_t, data= df)
 
 
@@ -142,16 +163,18 @@ ggforest(coxph_e_t, data= df)
 
 ##### Real CRF
 coxph_r <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                   Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + CRF, data = df, method = 'breslow')
+                   Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                   + MBP + CRF, data = df, method = 'breslow')
 ggforest(coxph_r, data= df)
 
 ##### Real CRF Tertile
 coxph_r_t <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                     Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + CRF_tertile , data = df, method = 'breslow')
+                     Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                     + MBP + CRF_tertile , data = df, method = 'breslow')
 ggforest(coxph_r_t, data= df)
 
 ##### Real CRF Qualtile
 coxph_r_t <- coxph(formula = surv_obejct ~ AGE + Smoke + ALC + BMI + MVPA + Diabetes + Hypertension + 
-                     Hyperlipidemia + Hepatatis + max_heart_rate + `HDL-C` + MBP + CRF_qualtile, data = df, method = 'breslow')
+                     Hyperlipidemia + Hepatatis + max_heart_rate + HDL_C + LDL_C + CRP + CHOLESTEROL + TG + 
+                     + MBP + CRF_qualtile, data = df, method = 'breslow')
 ggforest(coxph_r_t, data= df)
-

@@ -12,7 +12,7 @@ pd.set_option("display.max_columns", None)
 import os
 
 # %% Load dataset
-DATA_PATH = "/home/lkh256/Studio/VO2max_Prediction/Results"
+DATA_PATH = "/Users/lkh256/Studio/VO2max_Prediction/Results"
 df_init = datatable.fread(os.path.join(DATA_PATH, 'MF_general_eq_for_surv.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
 df_surv = datatable.fread(os.path.join(DATA_PATH, 'MF_general_all_for_surv.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
 df_init['SM_DATE'] = df_init['SM_DATE'].astype('datetime64')
@@ -95,4 +95,29 @@ f, ax = plt.subplots(1, figsize=(10,10))
 mean_diff_plot(df_init['APP_CRF'], df_init['CRF'], ax=ax)
 plt.show()
 
+# %% BMI Equation
+from statsmodels.graphics.api import qqplot
+import scipy.stats as stats
+
+f, ax = plt.subplots(1, figsize=(10,10))
+qqplot((df_init['CRF'] - df_init['ABRP_CRF']), dist=stats.t, fit=True, line="45", ax=ax)
+plt.show()
+
+f, ax = plt.subplots(1, figsize=(10,10))
+qqplot((df_init['CRF'] - df_init['ABR_CRF']), dist=stats.t, fit=True, line="45", ax=ax)
+plt.show()
+
+f, ax = plt.subplots(1, figsize=(10,10))
+qqplot((df_init['CRF'] - df_init['ABP_CRF']), dist=stats.t, fit=True, line="45", ax=ax)
+plt.show()
+# %% Percentage Fat Equation
+f, ax = plt.subplots(1, figsize=(10,10))
+qqplot((df_init['CRF'] - df_init['APRP_CRF']), dist=stats.t, fit=True, line="45", ax=ax)
+plt.show()
+f, ax = plt.subplots(1, figsize=(10,10))
+qqplot((df_init['CRF'] - df_init['APR_CRF']), dist=stats.t, fit=True, line="45", ax=ax)
+plt.show()
+f, ax = plt.subplots(1, figsize=(10,10))
+qqplot((df_init['CRF'] - df_init['APP_CRF']), dist=stats.t, fit=True, line="45", ax=ax)
+plt.show()
 # %%
