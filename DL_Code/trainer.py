@@ -1,4 +1,5 @@
 from copy import deepcopy
+from tqdm import tqdm
 import numpy as np
 
 import torch
@@ -62,8 +63,8 @@ class Trainer():
                 
                 if config.verbose >= 2:
                     print("Valid Iteration(%d/%d): loss=%.4e" % (i + 1, len(x), float(loss_i)))
-            
-            total_loss += float(loss_i)
+                    
+                total_loss += float(loss_i)
             
         return total_loss / len(x)
     
@@ -71,7 +72,7 @@ class Trainer():
         lowest_loss = np.inf
         best_model = None
         
-        for epoch_index in range(config.n_epochs):
+        for epoch_index in tqdm(range(config.n_epochs)):
             train_loss = self._train(train_data[0], train_data[1], config)
             valid_loss = self._validate(valid_data[0], valid_data[1], config)
             

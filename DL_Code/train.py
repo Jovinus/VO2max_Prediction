@@ -24,6 +24,7 @@ def define_argparser():
     p.add_argument('--n_epochs', type=int, default=20)
 
     p.add_argument('--n_layers', type=int, default=5)
+    p.add_argument('--n_node_first_hidden', type=int, default=300)
     p.add_argument('--use_dropout', action='store_true')
     p.add_argument('--dropout_p', type=float, default=.3)
 
@@ -52,11 +53,13 @@ def main(config):
         output_size=output_size,
         hidden_sizes=get_hidden_sizes(input_size,
                                       output_size,
-                                      config.n_layers),
+                                      config.n_layers,
+                                      config.n_node_first_hidden),
         use_batch_norm=not config.use_dropout,
         dropout_p=config.dropout_p,
     ).to(device)
     optimizer = optim.Adam(model.parameters())
+    # optimizer = optim.SGD(model.parameters(), lr=1e-3)
     crit = nn.MSELoss()
 
     if config.verbose >= 1:
