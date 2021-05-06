@@ -2,6 +2,9 @@ import numpy as np
 from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import LinearRegression, ElasticNet, Lasso
 import pandas as pd
+import statsmodels.api as sm
+import matplotlib.pyplot as plt
+import os
 
 def adjusted_r2(model, x, y):
     yhat = model.predict(x)
@@ -22,6 +25,16 @@ def get_metric(model, X_train, y_train, X_test, y_test):
     print('MSE Validation set score: {}'.format(mean_squared_error(model.predict(X_test), y_test)))
     return None
 
+def plot_balnd_altman(model, x, y, file_nm):
+    SAVEPATH = '/home/lkh256/Studio/VO2max_Prediction/Figure'
+    
+    y_hat = model.predict(x)
+
+    f, ax = plt.subplots(1, figsize = (10, 10))
+    sm.graphics.mean_diff_plot(y_hat, y, ax = ax)
+    plt.savefig(os.path.join(SAVEPATH, file_nm), dpi = 300)
+    
+    return None
 
 def make_model_get_metrics(X_train, y_train, X_test, y_test, column_mask):
     # linear_model = ElasticNet()
@@ -39,6 +52,9 @@ def make_model_get_metrics(X_train, y_train, X_test, y_test, column_mask):
     
     get_metric(linear_model, X_train=X_train[column_mask], X_test=X_test[column_mask],
             y_train=y_train, y_test=y_test)
+    
+    plot_balnd_altman(model = linear_model, x=X_test[column_mask], y=y_test, file_nm="_".join(column_mask))
+    
     return linear_model
 
 

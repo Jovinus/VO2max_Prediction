@@ -24,12 +24,33 @@ display(df_init.head(1))
 
 # %%
 df_death = pd.read_excel(os.path.join(DATA_PATH, 'HPC_death_2019_06_18.xlsx'))
-df_death['death_date'] = df_death['사망일'].astype('datetime64')
 df_id = pd.read_excel(os.path.join(DATA_PATH, 'VO2peak_HPCID.xlsx'))
-display(df_death.head(), df_id.head())
+
+df_crp = pd.read_csv(os.path.join(DATA_PATH, 'VO2max_CRP_data.csv'))
+df_crp['SM_DATE'] = df_crp['EXEC_TIME#3'].astype('datetime64')
+df_crp.rename(columns={'CRP#4':'CRP'}, inplace=True)
+
+df_chole = pd.read_csv(os.path.join(DATA_PATH, 'VO2max_chole_data.csv'))
+df_chole['SM_DATE'] = df_chole['EXEC_TIME#3'].astype('datetime64')
+df_chole.rename(columns= {'CHOLESTEROL#4':'CHOLESTEROL', 'TG#5':'TG'}, inplace=True)
+
+df_death['death_date'] = df_death['사망일'].astype('datetime64')
+display(df_death.head(), df_id.head(), df_crp.head(), df_chole.head())
 # %%
+#### Merge data
 df_init = pd.merge(df_init, df_id, left_on=['HPCID'], right_on=['HPCID'], how='left')
-df_init = pd.merge(df_init, df_death[['ptno', 'death_date']], left_on=['CDW_NO'], right_on=['ptno'], how='left').drop(columns='ptno')
+
+print(df_init.shape)
+df_init = pd.merge(df_init, df_death[['ptno', 'death_date']], 
+                   left_on=['CDW_NO'], right_on=['ptno'], how='left').drop(columns='ptno')
+print(df_init.shape)
+df_init = pd.merge(df_init, df_crp[['환자번호#1', 'SM_DATE', 'CRP']].drop_duplicates(), 
+                   left_on=['CDW_NO', 'SM_DATE'], right_on=['환자번호#1', 'SM_DATE'], how='left').drop(columns='환자번호#1')
+print(df_init.shape)
+df_init = pd.merge(df_init, df_chole[['환자번호#1', 'SM_DATE', 'CHOLESTEROL', 'TG']].drop_duplicates(), 
+                   left_on=['CDW_NO', 'SM_DATE'], right_on=['환자번호#1', 'SM_DATE'], how='left').drop(columns='환자번호#1')
+print(df_init.shape)
+
 display(df_init.head())
 # %% Define derived variables 
 
@@ -81,13 +102,18 @@ def is_MVPA(df):
     df['tmp_phy_freq'] = df['PHY_FREQ'].map(freq_mapper)
 
     df['tmp_phy_act'] = df['tmp_phy_freq'] * df['tmp_phy_duration']
+    
+    df['tmp_act_mets'] = df['OVERALL_PHYSICAL_ACTIVITY'].map({0:0, 1:3.3, 1:4, 2:8})
+    df['METs_week'] =  df['tmp_act_mets'] * df['tmp_phy_act']
+    df['METs_week'] = np.where(df['METs_week'].isnull(), 0, df['METs_week'])
+    
 
     #### Define MVPA(yes = 1/no = 0)
     df['MVPA'] = np.where(df['OVERALL_PHYSICAL_ACTIVITY'].isin([1, 2]) & (df['tmp_phy_act'] >= 150), 1, 0)
 
     display(df['MVPA'].value_counts(dropna=False))
     
-    return df.drop(columns=['tmp_phy_duration', 'tmp_phy_freq', 'tmp_phy_act'])
+    return df.drop(columns=['tmp_phy_duration', 'tmp_phy_freq', 'tmp_phy_act', 'tmp_act_mets'])
 
 #### Define disease to exclude
 def have_disease(df):
@@ -150,6 +176,9 @@ df_init['Exclude_Healthy'] = np.where(df_init[['Hypertension', 'Stroke', 'Angina
 df_init['Exclude_General'] = np.where(df_init[['HTN_med', 'Stroke', 'Angina', 'MI', 'Asthma', 'Cancer']].isin([1]).any(axis=1), 1, 0)
 display(df_init.head(1))
 
+df_init.to_csv('../Data/processed_whole_set.csv', index=False, encoding='utf-8-sig')
+#%% Exlucde Oultier
+
 #### Exclude outlier
 for i in df_init[['SM3631', 'SM0104', 'SM3720']].columns:
     if i == 'SM3720':
@@ -181,8 +210,9 @@ print("Number of Female in eq set = {}".format(len(set(df_general_eq[df_general_
 columns_to_use = ['SM_DATE', 'HPCID', 'sex', 'AGE', 'SM0104', 'SM0101', 
                 'SM0102', 'SM316001', 'MVPA', 'SM3631', 'Smoke', 'SM3720', 'SM0106', 'SM0111', 
                 'SM0112', 'SM0126', 'SM0151', 'SM0152', 'SM0153', 'SM0154', 'SM0155', 'SM3140', 
-                'SM3150', 'SM3170', 'max_heart_rate', 'BMI_cal', 'ASMI', 'VO2max', 'death', 'delta_time', 
-                'Diabetes', 'Hypertension', 'HTN_med', 'Hyperlipidemia', 'Hepatatis', 'ALC', 'BL3142', 'MBP', 'max_heart_rate']
+                'SM3150', 'SM3170', 'CRP', 'CHOLESTEROL', 'TG', 'max_heart_rate', 'BMI_cal', 
+                'ASMI', 'VO2max', 'death', 'delta_time', 'Diabetes', 'Hypertension', 'HTN_med', 
+                'Hyperlipidemia', 'Hepatatis', 'ALC', 'BL3142', 'BL314201', 'MBP', 'max_heart_rate']
 
 columns_to_rename = {'SM0104':'percentage_fat', 'SM0101':'Height', 
                     'SM0102':'Weight', 'SM316001': 'BMI', 
@@ -192,7 +222,7 @@ columns_to_rename = {'SM0104':'percentage_fat', 'SM0101':'Height',
                     'SM0151':'Muscle_mass(RA)', 'SM0152':'Muscle_mass(LA)', 
                     'SM0153':'Muscle_mass(BODY)', 'SM0154':'Muscle_mass(RL)', 
                     'SM0155':'Muscle_mass(LL)', 'SM3140':'체지방량', 
-                    'SM3150':'체수분량', 'SM3170':'제지방량', 'BL3142':"HDL-C"}
+                    'SM3150':'체수분량', 'SM3170':'제지방량', 'BL3142':"HDL_C", 'BL314201':'LDL_C'}
 
 
 df_healthy.rename(columns= columns_to_rename, inplace=True)
