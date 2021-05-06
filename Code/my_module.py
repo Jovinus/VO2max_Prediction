@@ -5,6 +5,8 @@ import pandas as pd
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 import os
+from sklearn.preprocessing import StandardScaler
+from sklearn.neural_network import MLPRegressor
 
 def adjusted_r2(model, x, y):
     yhat = model.predict(x)
@@ -39,7 +41,13 @@ def plot_balnd_altman(model, x, y, file_nm):
 def make_model_get_metrics(X_train, y_train, X_test, y_test, column_mask):
     # linear_model = ElasticNet()
     # linear_model = Lasso()
+    # linear_model = MLPRegressor(hidden_layer_sizes=(50, 50))
     linear_model = LinearRegression(n_jobs=-1)
+    
+    # scaler = StandardScaler()
+    # X_train[column_mask] = scaler.fit_transform(X_train[column_mask])
+    # X_test[column_mask] = scaler.transform(X_test[column_mask])
+    
     linear_model.fit(X_train[column_mask], y_train)
     
     equation = "\nEquation : "

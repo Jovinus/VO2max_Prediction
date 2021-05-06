@@ -81,7 +81,7 @@ class Trainer():
                 lowest_loss = valid_loss
                 best_model = deepcopy(self.model.state_dict())
             
-            print("Epoch(%d/%d) : train_loss=%.4e valid_loss=%4.e lowest_loss=%.4e" %(
+            print("Epoch(%d/%d) : train_loss=%.4e valid_loss=%.4e lowest_loss=%.4e" %(
                 epoch_index + 1, 
                 config.n_epochs, 
                 train_loss,

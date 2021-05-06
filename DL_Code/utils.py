@@ -16,10 +16,9 @@ def load_dataset():
     
     #### basic data preprocessing
     categorical = ['sex', 'MVPA']
-    numeric = ['AGE', 'sex', 'BMI', 'rest_HR']
+    numeric = ['AGE', 'BMI', 'rest_HR']
     
-    df_orig[categorical] = df_orig[categorical].astype(float)
-    df_orig[numeric] = df_orig[numeric].astype(float)
+    df_orig[categorical] = df_orig[categorical] * 1
     
     #### Define columns to analysis
     column_mask = numeric + categorical
@@ -29,12 +28,12 @@ def load_dataset():
     
     return x, y
 
-def split_data(x, y, train_ratio=0.8, device='cpu'):
+def split_data(x, y, train_ratio=0.8, device=torch.device('cpu')):
     train_cnt = int(x.size(0) * train_ratio)
     valid_cnt = x.size(0) - train_cnt
     
     # Shuffle dataset to split into train/valid set
-    indices = torch.randperm(x.size(0)).to(device)
+    indices = torch.randperm(x.size(0))
     
     x = torch.index_select(
         x, 
@@ -49,8 +48,10 @@ def split_data(x, y, train_ratio=0.8, device='cpu'):
     ).split([train_cnt, valid_cnt], dim=0)
     
     scaler = StandardScaler()
-    scaler.fit(x[0].to('cpu').numpy())
-    x = [torch.from_numpy(scaler.transform(x[0].to('cpu').numpy())).to(device), torch.from_numpy(scaler.transform(x[1].to('cpu').numpy())).to(device)]
+    scaler.fit(x[0].numpy())
+    x = (torch.from_numpy(scaler.transform(x[0].numpy())).to(device), 
+         torch.from_numpy(scaler.transform(x[1].numpy())).to(device))
+    y = (torch.reshape(y[0], (-1, 1)).to(device), torch.reshape(y[1], (-1, 1)).to(device))
     
     return x, y
 
@@ -78,4 +79,4 @@ if __name__ == '__main__':
     print(x)
     print(y)
     
-    print(get_hidden_sizes(100, 1, 3))
+    print(get_hidden_sizes(100, 1, 3, 100))

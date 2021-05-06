@@ -182,7 +182,7 @@ df_init.to_csv('../Data/processed_whole_set.csv', index=False, encoding='utf-8-s
 #### Exclude outlier
 for i in df_init[['SM3631', 'SM0104', 'SM3720']].columns:
     if i == 'SM3720':
-        df_init = df_init[(df_init[i] <= df_init[i].quantile(0.999))]
+        df_init = df_init[(df_init[i] <= df_init[i].quantile(0.999)) & (df_init[i] >= df_init[i].quantile(0.0001))]
     else:
         df_init = df_init[(df_init[i] >= df_init[i].quantile(0.005)) & (df_init[i] <= df_init[i].quantile(0.995))]
 
@@ -212,7 +212,7 @@ columns_to_use = ['SM_DATE', 'HPCID', 'sex', 'AGE', 'SM0104', 'SM0101',
                 'SM0112', 'SM0126', 'SM0151', 'SM0152', 'SM0153', 'SM0154', 'SM0155', 'SM3140', 
                 'SM3150', 'SM3170', 'CRP', 'CHOLESTEROL', 'TG', 'max_heart_rate', 'BMI_cal', 
                 'ASMI', 'VO2max', 'death', 'delta_time', 'Diabetes', 'Hypertension', 'HTN_med', 
-                'Hyperlipidemia', 'Hepatatis', 'ALC', 'BL3142', 'BL314201', 'MBP', 'max_heart_rate']
+                'Hyperlipidemia', 'Hepatatis', 'ALC', 'BL3142', 'BL314201', 'MBP']
 
 columns_to_rename = {'SM0104':'percentage_fat', 'SM0101':'Height', 
                     'SM0102':'Weight', 'SM316001': 'BMI', 
@@ -249,5 +249,7 @@ df_healthy.to_csv("../Data/healthy_survival.csv", encoding='utf-8-sig', index=Fa
 df_healthy_eq.to_csv("../Data/healthy_eq.csv", encoding='utf-8-sig', index=False)
 df_general.to_csv("../Data/general_survival.csv", encoding='utf-8-sig', index=False)
 df_general_eq.to_csv("../Data/general_eq.csv", encoding='utf-8-sig', index=False)
+
+# %%
 
 # %%

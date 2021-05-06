@@ -40,7 +40,7 @@ def main(config):
     device = torch.device('cpu') if config.gpu_id < 0 else torch.device('cuda:%d' % config.gpu_id)
 
     x, y = load_dataset()
-    x, y = split_data(x.to(device), y.to(device), train_ratio=config.train_ratio, device=device)
+    x, y = split_data(x, y, train_ratio=config.train_ratio, device=device)
 
     print("Train:", x[0].shape, y[0].shape)
     print("Valid:", x[1].shape, y[1].shape)
@@ -55,7 +55,7 @@ def main(config):
                                       output_size,
                                       config.n_layers,
                                       config.n_node_first_hidden),
-        use_batch_norm=not config.use_dropout,
+        use_batch_norm= not config.use_dropout,
         dropout_p=config.dropout_p,
     ).to(device)
     optimizer = optim.Adam(model.parameters())

@@ -156,5 +156,3 @@ display(df_selected_f.head(), df_surv_f.head())
 df_selected_f.to_csv('../Results/F_general_eq_for_surv.csv', index=False, encoding='utf-8-sig')
 df_surv_f.to_csv('../Results/F_general_all_for_surv.csv', index=False, encoding='utf-8-sig')
 # %%
-
-# %%
