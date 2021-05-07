@@ -12,10 +12,10 @@ def load_dataset():
     
     df_orig['SM_DATE'] = df_orig['SM_DATE'].astype('datetime64')
     df_orig['visit_num'] = df_orig.groupby(['HPCID'])['SM_DATE'].apply(pd.Series.rank)
-    df_orig = df_orig[df_orig['visit_num'] == 1].reset_index(drop=True)
+    df_orig = df_orig[(df_orig['visit_num'] == 1) & (df_orig['sex'] == 0)].reset_index(drop=True)
     
     #### basic data preprocessing
-    categorical = ['sex', 'MVPA']
+    categorical = ['MVPA']
     numeric = ['AGE', 'BMI', 'rest_HR']
     
     df_orig[categorical] = df_orig[categorical] * 1

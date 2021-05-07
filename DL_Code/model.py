@@ -20,7 +20,7 @@ class LinearBlock(nn.Module):
             return nn.BatchNorm1d(size) if use_batch_norm else nn.Dropout(dropput_p)
         
         self.linearblock = nn.Sequential(
-            nn.Linear(input_size, output_size),
+            nn.Linear(input_size, output_size, bias=False),
             nn.LeakyReLU(),
             get_regularizer(use_batch_norm, output_size)
         )
@@ -68,3 +68,10 @@ class FCL_Model(nn.Module):
         # |y| = (batch_size, output_size)
         
         return y
+
+if __name__ == '__main__':
+    model = FCL_Model(input_size=6, 
+                      output_size=1, 
+                      hidden_sizes=[100, 100],
+                      use_batch_norm=False)
+    print(model)
