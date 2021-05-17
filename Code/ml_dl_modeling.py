@@ -120,3 +120,16 @@ sm.graphics.mean_diff_plot(y_test, model.predict(X_test), ax = ax)
 
 plt.show()
 # %%
+
+from statsmodels.graphics.api import qqplot
+def plot_qq(y_hat, y):
+    
+    f, ax = plt.subplots(1, figsize=(10,10))
+    z = y - y_hat
+    qqplot(z, line="45", ax=ax)
+    plt.show()
+
+    return None
+
+plot_qq(y_hat=model.predict(X_test), y=y_test)
+# %%
