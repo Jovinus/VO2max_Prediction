@@ -15,8 +15,8 @@ def load_dataset():
     df_orig = df_orig[(df_orig['visit_num'] == 1) & (df_orig['sex'] == 0)].reset_index(drop=True)
     
     #### basic data preprocessing
-    categorical = ['MVPA']
-    numeric = ['AGE', 'BMI', 'rest_HR']
+    categorical = ['sex', 'MVPA', 'Smoke', 'ALC']
+    numeric = ['AGE', 'BMI_cal', 'percentage_fat', 'rest_HR', '체수분량']
     
     df_orig[categorical] = df_orig[categorical] * 1
     

@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.metrics import mean_squared_error
-from sklearn.linear_model import LinearRegression, ElasticNet, Lasso
+from sklearn.linear_model import LinearRegression, ElasticNet, Lasso, Ridge
 import pandas as pd
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
@@ -40,9 +40,10 @@ def plot_balnd_altman(model, x, y, file_nm):
 
 def make_model_get_metrics(X_train, y_train, X_test, y_test, column_mask):
     # linear_model = ElasticNet()
-    # linear_model = Lasso()
+    linear_model = Lasso(alpha=0.2)
+    # linear_model = Ridge(alpha=0.5)
     # linear_model = MLPRegressor(hidden_layer_sizes=(50, 50))
-    linear_model = LinearRegression(n_jobs=-1)
+    # linear_model = LinearRegression(n_jobs=-1)
     
     # scaler = StandardScaler()
     # X_train[column_mask] = scaler.fit_transform(X_train[column_mask])
