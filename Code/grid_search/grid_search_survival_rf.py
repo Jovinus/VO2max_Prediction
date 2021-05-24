@@ -43,7 +43,7 @@ y_data['delta_time'] = df_orig['delta_time'].astype(float)
 
 X_train_data, X_test_data, y_train_data, y_test_data = train_test_split(X_data, y_data, train_size=0.8, stratify=y_data['death'], random_state=1005)
 
-hyper_param_max_features = ['sqrt', 'log2', 'None', 'auto']
+hyper_param_max_features = [None, 'sqrt', 'log2']
 hyper_param_num_trees = [10, 50, 100 , 150, 200, 250]
 
 

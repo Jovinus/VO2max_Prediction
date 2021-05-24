@@ -54,7 +54,7 @@ from sklearn.model_selection import GridSearchCV
 feature_mask = ['AGE', 'sex', 'BMI', 'rest_HR', 'MVPA']
 
 rf_reg = RandomForestRegressor(n_jobs=-1)
-hyper_param = {'n_estimators':range(100, 1000, 10), 
+hyper_param = {'n_estimators':range(100, 1000, 100), 
                'criterion':['mse', 'mae'], 
                'min_samples_split':[2, 3, 4], 
                'max_features':['auto', 'sqrt', 'log2']}
