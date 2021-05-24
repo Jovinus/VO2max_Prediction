@@ -4,7 +4,6 @@ from numpy.lib.function_base import disp
 import seaborn as sns 
 import datatable
 import pandas as pd
-from my_module import *
 import matplotlib.pyplot as plt
 from IPython.display import display
 pd.set_option("display.max_columns", None)
