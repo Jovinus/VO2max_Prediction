@@ -4,14 +4,13 @@ from numpy.lib.function_base import disp
 import seaborn as sns 
 import datatable
 import pandas as pd
-from my_module import *
 import matplotlib.pyplot as plt
 from IPython.display import display
 pd.set_option("display.max_columns", None)
 import os
 
 # %% Load dataset
-DATA_PATH = "/home/lkh256/Studio/VO2max_Prediction/Data"
+DATA_PATH = "/home/khl256/Studio/VO2max_Prediction/Data"
 df_init = datatable.fread(os.path.join(DATA_PATH, 'general_eq.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
 df_init['SM_DATE'] = df_init['SM_DATE'].astype('datetime64')
 
