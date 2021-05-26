@@ -9,7 +9,7 @@ pd.set_option("display.max_columns", None)
 import os
 
 # %% Load dataset
-DATA_PATH = "/home/khl256/Studio/VO2max_Prediction/Data"
+DATA_PATH = "/home/lkh256/Studio/VO2max_Prediction/Data"
 df_init = datatable.fread(os.path.join(DATA_PATH, 'general_eq.csv'), encoding='utf-8-sig', na_strings=['', 'NA']).to_pandas()
 df_init['SM_DATE'] = df_init['SM_DATE'].astype('datetime64')
 
@@ -53,9 +53,9 @@ hyper_param_gamma = [0, 0.1, 0.2, 0.3]
 feature_mask = ['AGE', 'sex', 'BMI', 'rest_HR', 'MVPA']
 results = {}
 
-for hyper_depth in tqdm(hyper_param_depth, desc= 'depth'):
+for hyper_lr in tqdm(hyper_param_lr, desc= 'l_rate'):
 
-    for hyper_lr in tqdm(hyper_param_lr, desc= 'l_rate'):
+    for hyper_depth in tqdm(hyper_param_depth, desc= 'depth'):
         
         for hyper_labmda in tqdm(hyper_param_labmda, desc= 'lambda'):
             
