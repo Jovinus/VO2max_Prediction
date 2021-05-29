@@ -15,7 +15,7 @@ df_orig['upper_bound'] = np.where(df_orig['death'] == 1, df_orig['lower_bound'],
 df_orig.head()
 
 # %%
-feature_names = ['AGE', 'sex', 'Smoke', 'ALC', 'CRP', 'TG', 'Diabetes', 'HDL_C', 'LDL_C', 'MBP', 'ABRP_CRF']
+feature_names = ['AGE', 'sex', 'Smoke', 'ALC', 'CRP', 'TG', 'Diabetes', 'Hyperlipidemia', 'MBP', 'ABRP_CRF']
 
 """
 Option 1: Adjust age
@@ -92,5 +92,5 @@ for hyper_depth in tqdm(hyper_param_depth, desc= 'depth'):
                 # print(result['mean_score'])
                 results["depth_" + str(hyper_depth) + "_lr_" + str(hyper_lr) + "_lambda_" + str(hyper_labmda) + "_gamma_" + str(hyper_gamma)] = result
 # %%
-with open('../../Model/MF_10_survival_xg_results.pickle', 'wb') as file_nm:
+with open('../../Model/MF_10_survival_xg_results_var.pickle', 'wb') as file_nm:
     pickle.dump(results, file_nm, protocol=pickle.HIGHEST_PROTOCOL)

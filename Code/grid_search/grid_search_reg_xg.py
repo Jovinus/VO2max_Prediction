@@ -31,8 +31,8 @@ display(df_selected.head())
 from sklearn.model_selection import train_test_split
 
 train_set, test_set = train_test_split(df_selected,  
-                                       random_state=1005, 
-                                       stratify=df_selected['death'], 
+                                       random_state=1004, 
+                                       stratify=df_selected['sex'], 
                                        test_size=0.2)
 
 print("Train set size = {}".format(len(train_set)))
@@ -61,7 +61,7 @@ for hyper_lr in tqdm(hyper_param_lr, desc= 'l_rate'):
             
             for hyper_gamma in tqdm(hyper_param_gamma, desc= 'gamma'):
 
-                skf = RepeatedStratifiedKFold(n_splits=10, n_repeats=1)
+                skf = RepeatedStratifiedKFold(n_splits=10, n_repeats=10)
 
                 scores = []
 
@@ -97,5 +97,5 @@ for hyper_lr in tqdm(hyper_param_lr, desc= 'l_rate'):
                 # print(result['mean_score'])
                 results["depth_" + str(hyper_depth) + "_lr_" + str(hyper_lr) + "_lambda_" + str(hyper_labmda) + "_gamma_" + str(hyper_gamma)] = result
 # %%
-with open('./results_xg_reg.pickle', 'wb') as file_nm:
+with open('./results_10_xg_reg.pickle', 'wb') as file_nm:
     pickle.dump(results, file_nm, protocol=pickle.HIGHEST_PROTOCOL)

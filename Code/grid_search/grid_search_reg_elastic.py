@@ -32,11 +32,11 @@ display(df_selected.head())
 # %% Tran-test split for validation
 from sklearn.model_selection import train_test_split
 
-X_train, X_test, y_train, y_test = train_test_split(df_selected.drop(columns=['VO2max']),
-                                                    df_selected['VO2max'], random_state=1005, stratify=df_selected['death'],
+X_train_data, X_test_data, y_train_data, y_test_data = train_test_split(df_selected.drop(columns=['VO2max']),
+                                                    df_selected['VO2max'], random_state=1004, stratify=df_selected['sex'],
                                                     test_size=0.2)
-print("Train set size = {}".format(len(X_train)))
-print("Test set size = {}".format(len(X_test)))
+print("Train set size = {}".format(len(X_train_data)))
+print("Test set size = {}".format(len(X_test_data)))
 
 # %% Gridsearch to find best models
 """
@@ -49,29 +49,58 @@ Adjusted with age, sex, rest_HR, MVPA
 -----------------------------------------------------------------------------------
 """
 from sklearn.linear_model import ElasticNet
-from sklearn.model_selection import GridSearchCV
+from tqdm import tqdm
+from sklearn.model_selection import RepeatedStratifiedKFold
 
 feature_mask = ['AGE', 'sex', 'BMI', 'rest_HR', 'MVPA']
 
-linear_reg = ElasticNet()
-hyper_param = {'alpha':[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 3, 4, 5], 
-               'l1_ratio':range(0, 1, 10), 
-               'normalize':[True, False], 
-               'selection':['cyclic', 'random']}
+hyper_param_alpha = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 3, 4, 5]
+hyper_param_l1_ratio = [1, 2, 3, 4, 5, 6, 7, 8, 9] 
+hyper_param_normalize = [True, False]
+hyper_param_selection = ['cyclic', 'random']
 
 
-grid_search = GridSearchCV(estimator=linear_reg, 
-                           param_grid=hyper_param, 
-                           scoring='r2', 
-                           n_jobs=-1, 
-                           cv=10)
+results = {}
 
-grid_search.fit(X_train[feature_mask].astype(float), y_train)
-print(grid_search.score(X_train[feature_mask].astype(float), y_train))
-print(grid_search.score(X_test[feature_mask].astype(float), y_test))
+for hyper_normalize in tqdm(hyper_param_normalize, desc= 'normalize'):
+    
+    for hyper_alpha in tqdm(hyper_param_alpha, desc= 'alpha'):
+        
+        for hyper_l1_ratio in tqdm(hyper_param_l1_ratio, desc= 'l1_ratio'):
+            
+            for hyper_selection in tqdm(hyper_param_selection, desc= 'selection'):
+
+                skf = RepeatedStratifiedKFold(n_splits=10, n_repeats=10)
+
+                scores = []
+
+                for train_index, validation_index in skf.split(X_train_data, X_train_data['sex']):
+                    
+                        X_train = X_train_data.iloc[train_index][feature_mask]
+                        X_validation = X_train_data.iloc[validation_index][feature_mask]
+
+                        model_elastic = ElasticNet(alpha= hyper_alpha, 
+                                            normalize=hyper_normalize,
+                                            l1_ratio= hyper_l1_ratio,
+                                            selection= hyper_selection)
+
+                        model_elastic.fit(X=X_train_data.iloc[train_index][feature_mask], y=y_train_data.iloc[train_index])
+                        
+                        r2_score = model_elastic.score(X_train_data.iloc[validation_index][feature_mask], y_train_data.iloc[validation_index])
+
+                        scores.append(r2_score)
+
+                result = {'normalize': hyper_normalize, 
+                          'alpha': hyper_alpha, 
+                          'l1_ratio': hyper_l1_ratio, 
+                          'selection': hyper_selection, 
+                            'scores':scores, 
+                            'mean_score':np.mean(scores), 
+                            'std_score':np.std(scores)}
+                # print(result['mean_score'])
+                results["normalize_" + str(hyper_normalize) + "_alpha_" + str(hyper_alpha) + "_l1_ratio_" + str(hyper_l1_ratio) + "_selection_" + str(hyper_selection)] = result
 
 # %%
-results = pd.DataFrame(grid_search.cv_results_)
-results.to_csv('results_elastic_reg.csv', encoding='utf-8-sig')
-# %%
-print("Best hyperparameters : \n" ,grid_search.best_params_)
+import pickle
+with open('./results_10_elastic_reg.pickle', 'wb') as file_nm:
+    pickle.dump(results, file_nm, protocol=pickle.HIGHEST_PROTOCOL)

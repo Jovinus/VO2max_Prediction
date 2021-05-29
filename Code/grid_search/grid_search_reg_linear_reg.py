@@ -33,11 +33,11 @@ display(df_selected.head())
 # %% Tran-test split for validation
 from sklearn.model_selection import train_test_split
 
-X_train, X_test, y_train, y_test = train_test_split(df_selected.drop(columns=['VO2max']),
-                                                    df_selected['VO2max'], random_state=1005, stratify=df_selected['death'],
+X_train_data, X_test_data, y_train_data, y_test_data = train_test_split(df_selected.drop(columns=['VO2max']),
+                                                    df_selected['VO2max'], random_state=1004, stratify=df_selected['sex'],
                                                     test_size=0.2)
-print("Train set size = {}".format(len(X_train)))
-print("Test set size = {}".format(len(X_test)))
+print("Train set size = {}".format(len(X_train_data)))
+print("Test set size = {}".format(len(X_test_data)))
 
 # %% Gridsearch to find best models
 """
@@ -50,27 +50,43 @@ Adjusted with age, sex, rest_HR, MVPA
 -----------------------------------------------------------------------------------
 """
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RepeatedStratifiedKFold
+from tqdm import tqdm
 
 feature_mask = ['AGE', 'sex', 'BMI', 'rest_HR', 'MVPA']
 
-linear_reg = LinearRegression()
-hyper_param = {'normalize':[True, False]}
+hyper_param_normalize = [True, False]
 
 
-grid_search = GridSearchCV(estimator=linear_reg, 
-                           param_grid=hyper_param, 
-                           scoring='r2', 
-                           n_jobs=-1, 
-                           cv=10)
+results = {}
 
-grid_search.fit(X_train[feature_mask].astype(float), y_train)
-print(grid_search.score(X_train[feature_mask].astype(float), y_train))
-print(grid_search.score(X_test[feature_mask].astype(float), y_test))
+for hyper_normalize in tqdm(hyper_param_normalize, desc= 'normalize'):
+
+    skf = RepeatedStratifiedKFold(n_splits=10, n_repeats=10)
+
+    scores = []
+
+    for train_index, validation_index in skf.split(X_train_data, X_train_data['sex']):
+        
+            X_train = X_train_data.iloc[train_index][feature_mask]
+            X_validation = X_train_data.iloc[validation_index][feature_mask]
+
+            model_linear = LinearRegression(n_jobs=-1, normalize=hyper_normalize)
+
+            model_linear.fit(X=X_train_data.iloc[train_index][feature_mask], y=y_train_data.iloc[train_index])
+            
+            r2_score = model_linear.score(X_train_data.iloc[validation_index][feature_mask], y_train_data.iloc[validation_index])
+
+            scores.append(r2_score)
+
+    result = {'normalize': hyper_normalize, 
+                'scores':scores, 
+                'mean_score':np.mean(scores), 
+                'std_score':np.std(scores)}
+    # print(result['mean_score'])
+    results["normalize_" + str(hyper_normalize)] = result
 
 # %%
-results = pd.DataFrame(grid_search.cv_results_)
-results.to_csv('results_linear_reg.csv', encoding='utf-8-sig')
-# %%
-print("Best hyperparameters : \n" ,grid_search.best_params_)
-# %%
+import pickle
+with open('./results_10_linear_reg.pickle', 'wb') as file_nm:
+    pickle.dump(results, file_nm, protocol=pickle.HIGHEST_PROTOCOL)

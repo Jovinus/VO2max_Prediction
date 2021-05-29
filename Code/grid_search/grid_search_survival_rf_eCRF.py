@@ -22,7 +22,7 @@ df_orig.head()
 feature_names = ['AGE', 'sex', 'Smoke', 'ALC', 'CRP', 'TG', 'Diabetes', 
                  'Hypertension', 'Hyperlipidemia', 'HDL_C', 'LDL_C', 'MBP', 'ABRP_CRF']
 
-feature_names = ['AGE', 'sex', 'Smoke', 'ALC', 'CRP', 'TG', 'Diabetes', 'HDL_C', 'LDL_C', 'MBP', 'ABRP_CRF']
+feature_names = ['AGE', 'sex', 'Smoke', 'ALC', 'CRP', 'TG', 'Diabetes', 'Hyperlipidemia', 'MBP', 'ABRP_CRF']
 
 """
 Option 1: Adjust age
@@ -75,6 +75,6 @@ for hyper_max_features in tqdm(hyper_param_max_features, desc= 'max_features'):
         results["max_features_" + str(hyper_max_features) + "_num_trees_" + str(hyper_num_trees)] = result
 
 # %%
-with open('../../Model/MF_10_survival_rf_results.pickle', 'wb') as file_nm:
+with open('../../Model/MF_10_survival_rf_results_var.pickle', 'wb') as file_nm:
     pickle.dump(results, file_nm, protocol=pickle.HIGHEST_PROTOCOL)
 # %%
