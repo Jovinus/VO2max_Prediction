@@ -18,6 +18,14 @@ df_surv = datatable.fread(os.path.join(DATA_PATH, 'general_survival.csv'), encod
 df_init['SM_DATE'] = df_init['SM_DATE'].astype('datetime64')
 df_surv['SM_DATE'] = df_surv['SM_DATE'].astype('datetime64')
 
+df_init['MED_HYPERTENSION'] = np.where((df_init['MED_HYPERTENSION'] == 1) 
+                                       | (df_init['MED_HYPERTENSION'] == 'True'), 1, 0)
+
+df_init['MED_HYPERLIPIDEMIA'] = np.where((df_init['MED_HYPERLIPIDEMIA'] == 1) 
+                                       | (df_init['MED_HYPERLIPIDEMIA'] == 'True'), 1, 0)
+
+df_init[['MED_HYPERTENSION', 'MED_HYPERLIPIDEMIA']] = df_init[['MED_HYPERTENSION', 'MED_HYPERLIPIDEMIA']].astype(int)
+
 df_init = df_init.fillna(df_init.median())
 df_surv = df_surv.fillna(df_surv.median())
 
