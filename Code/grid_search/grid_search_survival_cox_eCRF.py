@@ -19,11 +19,14 @@ df_orig['upper_bound'] = np.where(df_orig['death'] == 1, df_orig['lower_bound'],
 df_orig.head()
 
 # %%
-feature_names = ['AGE', 'sex', 'Smoke', 'ALC', 'CRP', 'TG', 'Diabetes', 
-                 'Hypertension', 'Hyperlipidemia', 'HDL_C', 'LDL_C', 'MBP', 'ABRP_CRF']
+# feature_names = ['AGE', 'sex', 'Smoke', 'ALC', 'CRP', 'TG', 'Diabetes', 
+#                  'Hypertension', 'Hyperlipidemia', 'HDL_C', 'LDL_C', 'MBP', 'ABRP_CRF']
 
-feature_names = ['AGE', 'sex', 'Smoke', 'ALC', 'CRP', 'TG', 'Diabetes', 'HDL_C', 'LDL_C', 'MBP', 'ABRP_CRF']
+# feature_names = ['AGE', 'sex', 'Smoke', 'ALC', 'CRP', 'TG', 'Diabetes', 'HDL_C', 'LDL_C', 'MBP', 'ABRP_CRF']
 
+
+feature_names = ['AGE', 'sex', 'Smoke', 'ALC', 'CRP', 'TG', 'HDL_C', 'LDL_C', 'MBP', 
+                 'Diabetes', 'Hypertension', 'MED_HYPERLIPIDEMIA', 'ABRP_CRF']
 """
 Option 1: Adjust age
 Option 2: Adjust sex
