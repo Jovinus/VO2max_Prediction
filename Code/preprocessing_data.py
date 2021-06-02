@@ -212,7 +212,7 @@ columns_to_use = ['SM_DATE', 'HPCID', 'sex', 'AGE', 'SM0104', 'SM0101',
                 'SM0112', 'SM0126', 'SM0151', 'SM0152', 'SM0153', 'SM0154', 'SM0155', 'SM3140', 
                 'SM3150', 'SM3170', 'CRP', 'CHOLESTEROL', 'TG', 'max_heart_rate', 'BMI_cal', 
                 'ASMI', 'VO2max', 'death', 'delta_time', 'Diabetes', 'Hypertension', 'HTN_med', 
-                'Hyperlipidemia', 'Hepatatis', 'ALC', 'BL3142', 'BL314201', 'MBP']
+                'Hyperlipidemia', 'Hepatatis', 'ALC', 'BL3142', 'BL314201', 'MBP', 'MED_HYPERTENSION', 'MED_HYPERLIPIDEMIA']
 
 columns_to_rename = {'SM0104':'percentage_fat', 'SM0101':'Height', 
                     'SM0102':'Weight', 'SM316001': 'BMI', 
