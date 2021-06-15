@@ -49,6 +49,7 @@ Adjusted with age, sex, rest_HR, MVPA
 -----------------------------------------------------------------------------------
 """
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
 from tqdm import tqdm
 
 feature_mask = ['AGE', 'sex', 'BMI', 'rest_HR', 'MVPA']
@@ -60,17 +61,18 @@ hyper_param_max_features = ['auto', 'sqrt', 'log2']
 
 results = {}
 
-for hyper_max_features in tqdm(hyper_param_max_features, desc= 'max_features'):
+for hyper_n_estimators in tqdm(hyper_param_n_estimators, desc= 'n_estimators'):
 
-    for hyper_n_estimators in tqdm(hyper_param_n_estimators, desc= 'n_estimators'):
+    for hyper_max_features in tqdm(hyper_param_max_features, desc= 'max_features'):
         
         for hyper_criterion in tqdm(hyper_param_criterion, desc= 'criterion'):
             
             for hyper_min_samples_split in tqdm(hyper_param_min_samples_split, desc= 'num_trees'):
 
-                skf = RepeatedStratifiedKFold(n_splits=10, n_repeats=10)
+                skf = RepeatedStratifiedKFold(n_splits=10, n_repeats=5)
 
                 scores = []
+                mse_loss = []
 
                 for train_index, validation_index in skf.split(X_train_data, X_train_data['sex']):
                     
@@ -86,8 +88,10 @@ for hyper_max_features in tqdm(hyper_param_max_features, desc= 'max_features'):
                         model_rf.fit(X=X_train_data.iloc[train_index][feature_mask], y=y_train_data.iloc[train_index])
                         
                         r2_score = model_rf.score(X_train_data.iloc[validation_index][feature_mask], y_train_data.iloc[validation_index])
+                        loss = mean_squared_error(y_true=y_train_data.iloc[validation_index], y_pred=model_rf.predict(X_train_data.iloc[validation_index][feature_mask]))
 
                         scores.append(r2_score)
+                        mse_loss.append(loss)
 
                 result = {'max_features': hyper_max_features, 
                           'n_estimators': hyper_n_estimators, 
@@ -95,13 +99,16 @@ for hyper_max_features in tqdm(hyper_param_max_features, desc= 'max_features'):
                           'criterion':hyper_criterion,
                           'scores':scores, 
                           'mean_score':np.mean(scores), 
-                          'std_score':np.std(scores)}
+                          'std_score':np.std(scores),
+                          'mse_loss':mse_loss, 
+                          'mean_mse':np.mean(mse_loss),
+                          'std_loss':np.std(mse_loss)}
                 # print(result['mean_score'])
                 results["max_features_" + str(hyper_max_features) + "_n_estimators_" + str(hyper_n_estimators) + "_min_samples_split_" + str(hyper_min_samples_split) + "_criterion_" + str(hyper_criterion)] = result
 
 # %%
 import pickle
-with open('./results_10_rf_reg.pickle', 'wb') as file_nm:
+with open('./results_5_rf_reg.pickle', 'wb') as file_nm:
     pickle.dump(results, file_nm, protocol=pickle.HIGHEST_PROTOCOL)
 
 

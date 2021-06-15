@@ -37,11 +37,12 @@ train_set, test_set = train_test_split(df_selected,
 
 print("Train set size = {}".format(len(train_set)))
 print("Test set size = {}".format(len(test_set)))
-# %%
+# %% Cross-Val Model
 
 from tqdm import tqdm
 from sklearn.model_selection import RepeatedStratifiedKFold
 from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error
 import numpy as np
 import pickle
 
@@ -61,9 +62,10 @@ for hyper_lr in tqdm(hyper_param_lr, desc= 'l_rate'):
             
             for hyper_gamma in tqdm(hyper_param_gamma, desc= 'gamma'):
 
-                skf = RepeatedStratifiedKFold(n_splits=10, n_repeats=10)
+                skf = RepeatedStratifiedKFold(n_splits=10, n_repeats=5)
 
                 scores = []
+                mse_loss = []
 
                 for train_index, validation_index in skf.split(train_set, train_set['death']):
                         X_train = train_set.iloc[train_index][feature_mask].values
@@ -90,12 +92,23 @@ for hyper_lr in tqdm(hyper_param_lr, desc= 'l_rate'):
                                             early_stopping_rounds=1000)
                         
                         score = r2_score(y_validation, model_xgb.predict(dvalidation))
+                        loss = mean_squared_error(y_true=y_validation, y_pred=model_xgb.predict(dvalidation))
 
                         scores.append(score)
+                        mse_loss.append(loss)
 
-                result = {'max_depth': hyper_depth, 'learning_rate': hyper_lr, 'lambda':hyper_labmda, 'gamma': hyper_gamma, 'scores':scores, 'mean_score':np.mean(scores), 'std_score':np.std(scores)}
+                result = {'max_depth': hyper_depth, 
+                          'learning_rate': hyper_lr, 
+                          'lambda':hyper_labmda, 
+                          'gamma': hyper_gamma, 
+                          'scores':scores, 
+                          'mean_score':np.mean(scores), 
+                          'std_score':np.std(scores), 
+                          'mse_loss':mse_loss, 
+                          'mean_mse':np.mean(mse_loss),
+                          'std_loss':np.std(mse_loss)}
                 # print(result['mean_score'])
                 results["depth_" + str(hyper_depth) + "_lr_" + str(hyper_lr) + "_lambda_" + str(hyper_labmda) + "_gamma_" + str(hyper_gamma)] = result
 # %%
-with open('./results_10_xg_reg.pickle', 'wb') as file_nm:
+with open('./results_5_xg_reg.pickle', 'wb') as file_nm:
     pickle.dump(results, file_nm, protocol=pickle.HIGHEST_PROTOCOL)

@@ -51,6 +51,7 @@ Adjusted with age, sex, rest_HR, MVPA
 from sklearn.linear_model import ElasticNet
 from tqdm import tqdm
 from sklearn.model_selection import RepeatedStratifiedKFold
+from sklearn.metrics import mean_squared_error
 
 feature_mask = ['AGE', 'sex', 'BMI', 'rest_HR', 'MVPA']
 
@@ -70,9 +71,10 @@ for hyper_normalize in tqdm(hyper_param_normalize, desc= 'normalize'):
             
             for hyper_selection in tqdm(hyper_param_selection, desc= 'selection'):
 
-                skf = RepeatedStratifiedKFold(n_splits=10, n_repeats=10)
+                skf = RepeatedStratifiedKFold(n_splits=10, n_repeats=5)
 
                 scores = []
+                mse_loss = []
 
                 for train_index, validation_index in skf.split(X_train_data, X_train_data['sex']):
                     
@@ -87,20 +89,24 @@ for hyper_normalize in tqdm(hyper_param_normalize, desc= 'normalize'):
                         model_elastic.fit(X=X_train_data.iloc[train_index][feature_mask], y=y_train_data.iloc[train_index])
                         
                         r2_score = model_elastic.score(X_train_data.iloc[validation_index][feature_mask], y_train_data.iloc[validation_index])
-
+                        loss = mean_squared_error(y_true=y_train_data.iloc[validation_index], y_pred=model_elastic.predict(X_train_data.iloc[validation_index][feature_mask]))
+                        
                         scores.append(r2_score)
 
                 result = {'normalize': hyper_normalize, 
                           'alpha': hyper_alpha, 
                           'l1_ratio': hyper_l1_ratio, 
                           'selection': hyper_selection, 
-                            'scores':scores, 
-                            'mean_score':np.mean(scores), 
-                            'std_score':np.std(scores)}
+                          'scores':scores, 
+                          'mean_score':np.mean(scores), 
+                          'std_score':np.std(scores),
+                          'mse_loss':mse_loss, 
+                          'mean_mse':np.mean(mse_loss),
+                          'std_loss':np.std(mse_loss)}
                 # print(result['mean_score'])
                 results["normalize_" + str(hyper_normalize) + "_alpha_" + str(hyper_alpha) + "_l1_ratio_" + str(hyper_l1_ratio) + "_selection_" + str(hyper_selection)] = result
 
 # %%
 import pickle
-with open('./results_10_elastic_reg.pickle', 'wb') as file_nm:
+with open('./results_5_elastic_reg.pickle', 'wb') as file_nm:
     pickle.dump(results, file_nm, protocol=pickle.HIGHEST_PROTOCOL)

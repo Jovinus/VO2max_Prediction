@@ -8,6 +8,7 @@ from my_module import *
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from IPython.display import display
+from sklearn.metrics import mean_squared_error
 pd.set_option("display.max_columns", None)
 import os
 
@@ -51,6 +52,7 @@ Adjusted with age, sex, rest_HR, MVPA
 """
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import RepeatedStratifiedKFold
+from sklearn.model_selection import KFold
 from tqdm import tqdm
 
 feature_mask = ['AGE', 'sex', 'BMI', 'rest_HR', 'MVPA']
@@ -62,11 +64,13 @@ results = {}
 
 for hyper_normalize in tqdm(hyper_param_normalize, desc= 'normalize'):
 
-    skf = RepeatedStratifiedKFold(n_splits=10, n_repeats=10)
+    #skf = RepeatedStratifiedKFold(n_splits=len(X_train_data)-1, n_repeats=1)
+    skf = KFold(n_splits=len(X_train_data))
 
     scores = []
+    press_stat = []
 
-    for train_index, validation_index in skf.split(X_train_data, X_train_data['sex']):
+    for train_index, validation_index in tqdm(skf.split(X_train_data), desc='n_fold'): #, X_train_data['sex']
         
             X_train = X_train_data.iloc[train_index][feature_mask]
             X_validation = X_train_data.iloc[validation_index][feature_mask]
@@ -75,18 +79,26 @@ for hyper_normalize in tqdm(hyper_param_normalize, desc= 'normalize'):
 
             model_linear.fit(X=X_train_data.iloc[train_index][feature_mask], y=y_train_data.iloc[train_index])
             
-            r2_score = model_linear.score(X_train_data.iloc[validation_index][feature_mask], y_train_data.iloc[validation_index])
-
-            scores.append(r2_score)
-
+            #r2_score = model_linear.score(X_train_data.iloc[validation_index][feature_mask], y_train_data.iloc[validation_index])
+            # mse_loss = mean_squared_error(y_true=y_train_data.iloc[validation_index], y_pred=X_train_data.iloc[validation_index][feature_mask])
+            pred_resid_squared = np.square(model_linear.predict(X_train_data.iloc[validation_index][feature_mask]) - y_train_data.iloc[validation_index])
+            #scores.append(r2_score)
+            press_stat.append(pred_resid_squared)
+    
+    press_statics = np.sum(press_stat)
+    predicted_r2 = 1 - (press_statics / np.square(y_train_data - np.mean(y_train_data)).sum())
+    
+    
     result = {'normalize': hyper_normalize, 
                 'scores':scores, 
-                'mean_score':np.mean(scores), 
-                'std_score':np.std(scores)}
+                # 'mean_score':np.mean(scores), 
+                # 'std_score':np.std(scores), 
+                'PRESS':press_statics, 
+                'Predicted R2': predicted_r2}
     # print(result['mean_score'])
     results["normalize_" + str(hyper_normalize)] = result
 
 # %%
 import pickle
-with open('./results_10_linear_reg.pickle', 'wb') as file_nm:
+with open('./results_press_r2_linear_reg.pickle', 'wb') as file_nm:
     pickle.dump(results, file_nm, protocol=pickle.HIGHEST_PROTOCOL)

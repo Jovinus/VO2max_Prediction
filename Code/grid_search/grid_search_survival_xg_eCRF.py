@@ -45,9 +45,9 @@ hyper_param_gamma = [0, 0.1, 0.2, 0.3]
 
 results = {}
 
-for hyper_depth in tqdm(hyper_param_depth, desc= 'depth'):
+for hyper_lr in tqdm(hyper_param_lr, desc= 'l_rate'):
 
-    for hyper_lr in tqdm(hyper_param_lr, desc= 'l_rate'):
+    for hyper_depth in tqdm(hyper_param_depth, desc= 'depth'):
         
         for hyper_labmda in tqdm(hyper_param_labmda, desc= 'lambda'):
             
