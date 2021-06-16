@@ -27,15 +27,16 @@ print("Check their is any missing variables in dataset: \n", df_init.isnull().su
 
 # %% Sort visit number and select rows to analysis
 df_init['visit_num'] = df_init.groupby(['HPCID'])['SM_DATE'].apply(pd.Series.rank)
-df_selected = df_init[df_init['visit_num'] == 1].reset_index(drop=True)
+df_selected = df_init[(df_init['visit_num'] == 1) & (df_init['sex'] == 1)].reset_index(drop=True)
+# df_selected = df_init[(df_init['visit_num'] == 1)].reset_index(drop=True)
 print("Number of eq case = {}".format(len(df_selected)))
 display(df_selected.head())
 
 # %% Tran-test split for validation
 from sklearn.model_selection import train_test_split
 
-X_train_data, X_test_data, y_train_data, y_test_data = train_test_split(df_selected.drop(columns=['VO2max']),
-                                                    df_selected['VO2max'], random_state=1004, stratify=df_selected['sex'],
+X_train_data, X_test_data, y_train_data, y_test_data = train_test_split(df_selected.drop(columns=['CRF']),
+                                                    df_selected['CRF'], random_state=1004, stratify=df_selected['sex'],
                                                     test_size=0.2)
 print("Train set size = {}".format(len(X_train_data)))
 print("Test set size = {}".format(len(X_test_data)))
@@ -55,8 +56,8 @@ from sklearn.model_selection import RepeatedStratifiedKFold
 from sklearn.model_selection import KFold
 from tqdm import tqdm
 
-feature_mask = ['AGE', 'sex', 'BMI', 'rest_HR', 'MVPA']
-
+# feature_mask = ['AGE', 'sex', 'BMI', 'rest_HR', 'MVPA']
+feature_mask = ['AGE', 'BMI', 'rest_HR', 'MVPA']
 hyper_param_normalize = [True, False]
 
 
@@ -90,15 +91,16 @@ for hyper_normalize in tqdm(hyper_param_normalize, desc= 'normalize'):
     
     
     result = {'normalize': hyper_normalize, 
-                'scores':scores, 
+                # 'scores':scores, 
                 # 'mean_score':np.mean(scores), 
                 # 'std_score':np.std(scores), 
-                'PRESS':press_statics, 
+                'PRESS': press_statics, 
                 'Predicted R2': predicted_r2}
     # print(result['mean_score'])
     results["normalize_" + str(hyper_normalize)] = result
 
 # %%
 import pickle
-with open('./results_press_r2_linear_reg.pickle', 'wb') as file_nm:
+with open('./F_results_press_r2_linear_reg.pickle', 'wb') as file_nm:
     pickle.dump(results, file_nm, protocol=pickle.HIGHEST_PROTOCOL)
+# %%

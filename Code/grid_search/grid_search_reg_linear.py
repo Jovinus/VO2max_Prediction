@@ -26,15 +26,16 @@ print("Check their is any missing variables in dataset: \n", df_init.isnull().su
 
 # %% Sort visit number and select rows to analysis
 df_init['visit_num'] = df_init.groupby(['HPCID'])['SM_DATE'].apply(pd.Series.rank)
-df_selected = df_init[df_init['visit_num'] == 1].reset_index(drop=True)
+# df_selected = df_init[(df_init['visit_num'] == 1) & (df_init['sex'] == 0)].reset_index(drop=True)
+df_selected = df_init[(df_init['visit_num'] == 1)].reset_index(drop=True)
 print("Number of eq case = {}".format(len(df_selected)))
 display(df_selected.head())
 
 # %% Tran-test split for validation
 from sklearn.model_selection import train_test_split
 
-X_train_data, X_test_data, y_train_data, y_test_data = train_test_split(df_selected.drop(columns=['VO2max']),
-                                                    df_selected['VO2max'], random_state=1004, stratify=df_selected['sex'],
+X_train_data, X_test_data, y_train_data, y_test_data = train_test_split(df_selected.drop(columns=['CRF']),
+                                                    df_selected['CRF'], random_state=1004, stratify=df_selected['sex'],
                                                     test_size=0.2)
 print("Train set size = {}".format(len(X_train_data)))
 print("Test set size = {}".format(len(X_test_data)))
@@ -54,6 +55,7 @@ from sklearn.metrics import mean_squared_error
 from tqdm import tqdm
 
 feature_mask = ['AGE', 'sex', 'BMI', 'rest_HR', 'MVPA']
+# feature_mask = ['AGE', 'BMI', 'rest_HR', 'MVPA']
 
 hyper_param_normalize = [True, False]
 
@@ -62,7 +64,7 @@ results = {}
 
 for hyper_normalize in tqdm(hyper_param_normalize, desc= 'normalize'):
 
-    skf = RepeatedStratifiedKFold(n_splits=10, n_repeats=10)
+    skf = RepeatedStratifiedKFold(n_splits=10, n_repeats=5)
 
     scores = []
     mse_loss = []
@@ -80,6 +82,7 @@ for hyper_normalize in tqdm(hyper_param_normalize, desc= 'normalize'):
             loss = mean_squared_error(y_true=y_train_data.iloc[validation_index], y_pred=model_linear.predict(X_train_data.iloc[validation_index][feature_mask]))
             
             scores.append(r2_score)
+            mse_loss.append(loss)
 
     result = {'normalize': hyper_normalize, 
               'scores':scores, 
@@ -93,5 +96,5 @@ for hyper_normalize in tqdm(hyper_param_normalize, desc= 'normalize'):
 
 # %%
 import pickle
-with open('./results_5_linear_reg.pickle', 'wb') as file_nm:
+with open('./MF_results_5_linear_reg.pickle', 'wb') as file_nm:
     pickle.dump(results, file_nm, protocol=pickle.HIGHEST_PROTOCOL)

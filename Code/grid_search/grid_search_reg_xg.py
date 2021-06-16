@@ -67,13 +67,13 @@ for hyper_lr in tqdm(hyper_param_lr, desc= 'l_rate'):
                 scores = []
                 mse_loss = []
 
-                for train_index, validation_index in skf.split(train_set, train_set['death']):
+                for train_index, validation_index in skf.split(train_set, train_set['sex']):
                         X_train = train_set.iloc[train_index][feature_mask].values
-                        y_train = train_set.iloc[train_index]['VO2max'].values
+                        y_train = train_set.iloc[train_index]['CRF'].values
                         dtrain = xgb.DMatrix(X_train, label=y_train)
                         
                         X_validation = train_set.iloc[validation_index][feature_mask].values
-                        y_validation = train_set.iloc[validation_index]['VO2max'].values
+                        y_validation = train_set.iloc[validation_index]['CRF'].values
                         dvalidation = xgb.DMatrix(X_validation, label=y_validation)
 
                         params = {'objective': 'reg:squarederror',
@@ -110,5 +110,5 @@ for hyper_lr in tqdm(hyper_param_lr, desc= 'l_rate'):
                 # print(result['mean_score'])
                 results["depth_" + str(hyper_depth) + "_lr_" + str(hyper_lr) + "_lambda_" + str(hyper_labmda) + "_gamma_" + str(hyper_gamma)] = result
 # %%
-with open('./results_5_xg_reg.pickle', 'wb') as file_nm:
+with open('./MF_results_5_xg_reg.pickle', 'wb') as file_nm:
     pickle.dump(results, file_nm, protocol=pickle.HIGHEST_PROTOCOL)
