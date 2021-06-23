@@ -60,7 +60,7 @@ df_results = pd.merge(df_results, df_cac, on=['환자번호#1', 'SM_DATE'], how=
 df_results.rename(columns={'환자번호#1':'ID'}, inplace=True)
 # %%
 display(df_results)
-# %%
+# %%  Merge on CRF set
 
 df_mets = pd.read_csv("../Data/general_eq.csv")
 df_id_list = pd.read_excel("../Data/raw_data/VO2peak_HPCID.xlsx")
@@ -70,6 +70,16 @@ df_mets['SM_DATE'] = df_mets['SM_DATE'].astype('datetime64')
 df_final = pd.merge(df_mets, df_results, 
                     left_on=['CDW_NO', 'SM_DATE'], 
                     right_on=['ID', 'SM_DATE'], how='left')
-# %%
+
 df_final.to_csv("./data_request.csv", index=False, encoding='utf-8-sig')
+# %% Merge on Survival Set
+
+df_mets = pd.read_csv("../Results/MF_general_eq_for_surv.csv")
+df_id_list = pd.read_excel("../Data/raw_data/VO2peak_HPCID.xlsx")
+df_mets = pd.merge(df_mets, df_id_list, on='HPCID', how='left')
+df_mets['SM_DATE'] = df_mets['SM_DATE'].astype('datetime64')
 # %%
+df_final = pd.merge(df_mets, df_results, 
+                    left_on=['CDW_NO', 'SM_DATE'], 
+                    right_on=['ID', 'SM_DATE'], how='left')
+df_final.to_csv("./data_surv_request.csv", index=False, encoding='utf-8-sig')
