@@ -212,7 +212,7 @@ columns_to_use = ['SM_DATE', 'HPCID', 'sex', 'AGE', 'SM0104', 'SM0101',
                 'SM0112', 'SM0126', 'SM0151', 'SM0152', 'SM0153', 'SM0154', 'SM0155', 'SM3140', 
                 'SM3150', 'SM3170', 'CRP', 'CHOLESTEROL', 'TG', 'max_heart_rate', 'BMI_cal', 
                 'ASMI', 'VO2max', 'death', 'delta_time', 'Diabetes', 'Hypertension', 'HTN_med', 
-                'Hyperlipidemia', 'Hepatatis', 'ALC', 'BL3142', 'BL314201', 'MBP', 'MED_HYPERTENSION', 'MED_HYPERLIPIDEMIA']
+                'Hyperlipidemia', 'Hepatatis', 'ALC', 'BL3142', 'BL314201', 'MBP', 'SM0600SBP', 'SM0600DBP', 'MED_HYPERTENSION', 'MED_HYPERLIPIDEMIA']
 
 columns_to_rename = {'SM0104':'percentage_fat', 'SM0101':'Height', 
                     'SM0102':'Weight', 'SM316001': 'BMI', 
@@ -222,7 +222,7 @@ columns_to_rename = {'SM0104':'percentage_fat', 'SM0101':'Height',
                     'SM0151':'Muscle_mass(RA)', 'SM0152':'Muscle_mass(LA)', 
                     'SM0153':'Muscle_mass(BODY)', 'SM0154':'Muscle_mass(RL)', 
                     'SM0155':'Muscle_mass(LL)', 'SM3140':'체지방량', 
-                    'SM3150':'체수분량', 'SM3170':'제지방량', 'BL3142':"HDL_C", 'BL314201':'LDL_C'}
+                    'SM3150':'체수분량', 'SM3170':'제지방량', 'BL3142':"HDL_C", 'BL314201':'LDL_C', "SM0600SBP":"SBP", "SM0600DBP":"DBP"}
 
 
 df_healthy.rename(columns= columns_to_rename, inplace=True)
